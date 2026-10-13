@@ -33,7 +33,7 @@ export default function HingeReadout() {
       <Text>Snapshot: {describe(snapshot, available)}</Text>
       <Button title="Read a new snapshot" onPress={() => setSnapshot(getHinge())} />
       <Text>Change events since mounting: {events.changes}</Text>
-      <Text>Last event angle: {events.lastAngle === null ? 'No reading' : `${events.lastAngle}°`}</Text>
+      <Text>Last event angle: {events.lastAngle === null ? 'No reading' : `${Math.round(events.lastAngle)}°`}</Text>
     </View>
   );
 }

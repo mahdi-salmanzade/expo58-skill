@@ -62,6 +62,8 @@ Live Activities use `createLiveActivity` and their dedicated regions. They are n
 ActivityKit scheduling and update budgets remain system controlled.
 
 SDK 58 adds Android home-screen widgets, verified in the published package changelog; the versioned Widgets guide remains primarily iOS-oriented.
+Android widgets are opt-in: set the `expo-widgets` plugin option `enableAndroid: true`
+(default `false` in 58.0.x; the option is slated for removal once Android is on by default) and rebuild.
 Before implementing Android, inspect the installed package's Android examples and declarations; do not render SwiftUI on Android or invent a shared layout API.
 
 ## Adaptable native surfaces

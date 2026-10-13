@@ -64,6 +64,7 @@ import {
 arrangementViewStyle('split', { axes: 'both' });
 arrangementViewStyle('overlay', { axes: 'both' });
 splitArrangementLayoutRatio(0.4);
+splitArrangementLayoutRatio({ minHorizontal: 0.3, idealHorizontal: 0.4, maxHorizontal: 0.5 });
 splitArrangementLayoutSize({ minWidth: 240, idealWidth: 320, maxWidth: 440 });
 splitArrangementFixedLayoutSize({ horizontal: true, vertical: false });
 overlayArrangementEdge('bottom');

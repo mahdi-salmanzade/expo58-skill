@@ -26,8 +26,10 @@ npx expo install --check
 ```
 
 This hop changes RN 0.85 → 0.86 and raises Expo's supported Node floor to 22.13.x.
-Use current SDK 57 patches: early 57 releases had Hermes memory and development
-startup regressions that later patches fixed. The audited 57 map aligns
+Use current SDK 57 patches: the early-57 Hermes V1 memory regression is fixed only
+in `expo` >= 57.0.9. A development-startup regression
+([expo/expo#48298](https://github.com/expo/expo/issues/48298)) had no released fix
+at the last check; confirm its status rather than assuming a patch resolved it. The audited 57 map aligns
 Reanimated 4.5.1, Worklets 0.10.1, and Gesture Handler ~2.32.0. Keeping SDK 56's
 Reanimated dependency with RN 0.86 is not a valid shortcut.
 
@@ -108,7 +110,8 @@ custom launch behavior while merging the template changes.
 Test cold and warm URLs, authentication return URLs, notification taps, background
 and foreground transitions, quick actions, and Handoff when used. A black screen
 on iOS 27 can be a missing scene declaration or unresolved scene delegate class.
-Remove an old SDK 57 `ios.enableSceneSupport` workaround after upgrading: 58 already
+Remove an old SDK 57 `expo-build-properties` plugin option `ios.enableSceneSupport`
+(a plugin option, not a top-level app config `ios` key) after upgrading: 58 already
 uses scene support. Avoid global screen geometry assumptions in custom modules.
 
 ## 6. Fix silent application behavior changes
@@ -126,7 +129,7 @@ not a requirement to rewrite untouched modules.
 | Expo UI spacing | Omitted HStack/VStack/GlassEffectContainer spacing uses SwiftUI defaults; set `spacing={0}` only where zero spacing was intended. |
 | Android RNHostView | Replace removed `style` usage with supported modifiers. |
 | iOS RTL | Direction follows `I18nManager`; do not assume `supportsRTL` alone forces locale-derived layout. |
-| Photos video URI | Default URI now refers to the current edited asset; use `AssetUriVersion.ORIGINAL` when original bytes are required. |
+| Photos video URI | Default URI now refers to the current edited asset; pass `version: AssetUriVersion.ORIGINAL` (exported from `expo-media-library/next`, not the root entry) when original bytes are required. |
 
 Inspect the versioned references for [FileSystem](https://docs.expo.dev/versions/v58.0.0/sdk/filesystem/),
 [SQLite](https://docs.expo.dev/versions/v58.0.0/sdk/sqlite/),
@@ -157,12 +160,17 @@ for custom navigators or `expo-router/react-navigation` imports. Route keys and
 state are deterministic, navigation dispatch timing changed, and parts of the
 forked React Navigation API disappeared. Avoid depending on private route shapes.
 Check deep links, restored state, back gestures, tabs, drawer, and stack transitions.
+`freezeOnBlur` has no effect in SDK 58; remove it and use `activityEnabled` on the
+navigator or screen when inactive screens should keep state while pausing effects.
 
 Web async routes default to enabled; verify host routing and lazy chunks.
 Some Router features need optional `@expo/ui` / `expo-symbols` peers. Install them
 only if the app uses those features, through `npx expo install`.
 Gesture Handler 3 introduces hooks but retains legacy builders; migrate interacting
 groups together. See [17-animation-gesture-deps.md](17-animation-gesture-deps.md).
+
+`expo login` now defaults to browser-based login; scripts that relied on the
+prompt flow need `--no-browser` or `--username`/`--password`.
 
 Expo CLI now sets NODE_ENV by command before `.env` and app config evaluation.
 Move deployment selection away from inherited `NODE_ENV=test/staging`; use a

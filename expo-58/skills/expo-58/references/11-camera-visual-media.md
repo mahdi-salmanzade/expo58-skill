@@ -37,6 +37,8 @@ Barcode scanning is a separate operation; debounce a successful scan before trig
 `CameraView.scanDocumentAsync` invokes the platform scanning UI; it is a static method, not a preview-ref method.
 
 ```ts
+import { CameraView } from 'expo-camera';
+
 export async function scanPages() {
   if (!CameraView.isDocumentScannerAvailable) return null;
   const scan = await CameraView.scanDocumentAsync({ requestPdf: true });
