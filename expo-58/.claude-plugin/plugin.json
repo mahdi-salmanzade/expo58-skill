@@ -1,0 +1,25 @@
+{
+  "name": "expo-58",
+  "version": "1.0.0",
+  "description": "Expo SDK 58 beta reference with verified package snapshots, SDK 57 migration, Expo Router, Expo UI, expo-hinge, ArrangementView, and iPhone Duo adaptation guidance.",
+  "author": {
+    "name": "Mahdi Salmanzade",
+    "url": "https://github.com/mahdi-salmanzade"
+  },
+  "homepage": "https://github.com/mahdi-salmanzade/expo58-skill",
+  "repository": "https://github.com/mahdi-salmanzade/expo58-skill",
+  "license": "MIT",
+  "keywords": [
+    "expo",
+    "expo-sdk-58",
+    "react-native",
+    "claude-code",
+    "codex",
+    "expo-router",
+    "expo-ui",
+    "expo-hinge",
+    "iphone-duo",
+    "foldables",
+    "sdk-migration"
+  ]
+}

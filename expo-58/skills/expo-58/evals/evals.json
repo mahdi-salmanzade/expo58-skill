@@ -1,0 +1,127 @@
+{
+  "skill_name": "expo-58",
+  "snapshot_date": "2026-10-13",
+  "methodology": {
+    "purpose": "Forward-test version selection, migration decisions, and foldable behavior; no aggregate benchmark claim.",
+    "execution": "Give an independent agent the skill and prompt plus the smallest necessary fixture. Record actual edits, checks, and missing capabilities. Evaluate assertions against observable output.",
+    "side_effects": "Use a temporary app fixture. Do not publish builds, change accounts, submit to stores, or mutate a real app while running these scenarios.",
+    "offline": "For the release-status scenario use the supplied snapshot; otherwise allow authoritative documentation and installed package inspection."
+  },
+  "evals": [
+    {
+      "id": "sdk-detection",
+      "prompt": "Use expo-58 to fix an image picker bug. package.json says expo ~57.0.21 and the lockfile resolves 57.0.28. Do not upgrade the app.",
+      "assertions": [
+        "Identifies SDK57 and resolved patch rather than assuming58.",
+        "Uses matching SDK57 APIs and does not alter Expo major.",
+        "Loads only relevant media and SDK guidance."
+      ]
+    },
+    {
+      "id": "release-status",
+      "prompt": "Create a new Expo58 app. I heard it is the latest stable release. Use the included October13,2026 snapshot without network access.",
+      "assertions": [
+        "Clearly reports SDK58 beta status in the supplied snapshot.",
+        "Keeps requested SDK58 target and uses explicit SDK58 template.",
+        "Does not treat unsuffixed58.0.x as proof of stability or invent a stable release date."
+      ]
+    },
+    {
+      "id": "native-migration",
+      "prompt": "Upgrade this SDK57 app to58. ios/ contains hand-edited AppDelegate code, config plugins patch it, and the app uses SQLite with libSQL plus File.write without await.",
+      "assertions": [
+        "Inspects native ownership before running clean-by-default prebuild.",
+        "Handles scene lifecycle and source-patching plugin migration.",
+        "Addresses SQLite libSQL removal and asynchronous File.write.",
+        "Aligns dependencies, rebuilds native client, and checks affected behavior."
+      ]
+    },
+    {
+      "id": "sdk56-upgrade",
+      "prompt": "Move our SDK56 app to Expo58. We use @react-navigation imports, old OTA runtime configuration, and checked-in native projects.",
+      "assertions": [
+        "Plans and performs SDK56 to57 to58 stages with their own checks.",
+        "Does not apply only57-to58 changes or relabel old APIs.",
+        "Checks navigation, runtime compatibility, and native project ownership."
+      ]
+    },
+    {
+      "id": "hinge-availability",
+      "prompt": "Add a hinge angle readout to an SDK58 app on Android and iPhone. isAvailable() is true on my flat Android phone. The listener sometimes receives { hinge: null }.",
+      "assertions": [
+        "Distinguishes API availability from hinge presence.",
+        "Handles null snapshots and nested event.hinge.",
+        "Removes subscriptions on unmount or uses useHinge.",
+        "Avoids assigning angle directly from the event wrapper."
+      ]
+    },
+    {
+      "id": "android-closed-status",
+      "prompt": "My Android foldable reports unknown on the outer screen and never reports closed. Make the UI adapt when folded.",
+      "assertions": [
+        "Explains Android never reports closed status and unknown can mean the window does not span the fold.",
+        "Uses measured window/container space for layout, not angle or status.",
+        "If a closed-device interaction is needed, applies an app-specific near-zero angle threshold with null handling."
+      ]
+    },
+    {
+      "id": "arrangement-fallback",
+      "prompt": "Use ArrangementView for an Expo58 editor that still supports iOS16.4 and Android. It has preview and settings panes.",
+      "assertions": [
+        "Imports ArrangementView and modifiers from their verified entrypoints.",
+        "Uses Primary and Secondary children in a SwiftUI Host.",
+        "Provides explicit older-iOS and non-iOS fallback; does not assume automatic VStack fallback.",
+        "Separates base SDK minimum from27.1 feature support."
+      ]
+    },
+    {
+      "id": "duo-state-continuity",
+      "prompt": "Our Expo58 editor loses the selected item and unsaved caption when resizing on iPhone Duo. Fix it using this skill.",
+      "assertions": [
+        "Traces state ownership and component identity before editing.",
+        "Keeps draft/selection above layout branches and avoids size-keyed navigation.",
+        "Checks narrow/wide, keyboard, rotation, fold, and multitasking transitions.",
+        "Does not substitute a complete navigation rewrite without evidence it is necessary."
+      ]
+    },
+    {
+      "id": "duo-toolchain",
+      "prompt": "Our EAS iOS build uses an SDK58 alias and Xcode27.0. The phone runs iOS27.1 but hinge is null. Is setting deploymentTarget27.1 sufficient?",
+      "assertions": [
+        "Checks linked build SDK/toolchain and actual hardware/window state.",
+        "Explains deployment target alone cannot add APIs compiled out by an older Xcode SDK.",
+        "Uses a verified Duo-capable build image and rebuilds when appropriate.",
+        "Does not promise changing one setting will guarantee non-null hardware data."
+      ]
+    },
+    {
+      "id": "companion-drift",
+      "prompt": "Use Expo58 with our older iphone-duo skill, which says Expo may need a custom bridge for hinge APIs. Add hinge support without a native rewrite.",
+      "assertions": [
+        "Uses current expo-hinge and installed types instead of blindly following stale companion claims.",
+        "Treats companion as useful broader Apple guidance rather than prerequisite.",
+        "Checks actual package/build availability before implementing a custom bridge."
+      ]
+    },
+    {
+      "id": "animation-pins",
+      "prompt": "Our SDK58 app crashes after I installed the latest react-native-worklets independently. Fix package alignment.",
+      "assertions": [
+        "Reads actual resolved packages and SDK manifest.",
+        "Aligns Reanimated, Worklets, Gesture Handler, and RN as a compatible set.",
+        "Does not reuse SDK57 pins or infer compatibility from same package major.",
+        "Rebuilds after native dependency changes."
+      ]
+    },
+    {
+      "id": "evidence-boundary",
+      "prompt": "Review the included Duo examples. You have TypeScript and web docs but no iPhone Duo hardware or simulator. Finish what you can.",
+      "assertions": [
+        "Checks types and source claims using available tooling.",
+        "Reports hardware/simulator checks as unrun, not passed.",
+        "Provides concrete remaining state-continuity and hinge checks.",
+        "Does not block source-level work solely because hardware is absent."
+      ]
+    }
+  ]
+}
