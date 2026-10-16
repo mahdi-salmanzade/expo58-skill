@@ -12,7 +12,7 @@
       "name": "expo-58",
       "source": "./expo-58",
       "description": "Expo SDK 58 stable reference with verified package snapshots, SDK 57 migration, Expo Router, Expo UI, expo-hinge, ArrangementView, and iPhone Duo adaptation guidance.",
-      "version": "1.1.0"
+      "version": "1.1.1"
     }
   ]
 }

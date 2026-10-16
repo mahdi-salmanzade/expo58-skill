@@ -84,6 +84,10 @@ require the companion merely to use `expo-hinge` or build a responsive Expo view
 
 ## Reference map
 
+For a release-completeness audit, use the
+[changelog coverage index](references/changelog-coverage.md). It maps the named
+SDK 58 release changes to these references; ordinary tasks need only relevant rows.
+
 | Task | Read |
 |---|---|
 | Setup, SDK detection, tooling, project creation | [01 — Core setup](references/01-core-setup-upgrade.md) |

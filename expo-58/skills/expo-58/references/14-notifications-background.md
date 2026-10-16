@@ -27,6 +27,7 @@ Notifications.setNotificationHandler({
 
 Passing `null` removes Expo's handler. Android then does not show foreground notifications; iOS delegates to another registered delegate when present.
 Do not conflate an absent initial handler with explicitly removing it.
+SDK 58 forwards iOS notification-center callbacks to another library's registered `UNUserNotificationCenterDelegate`, enabling coexistence; test foreground display and response routing with both installed.
 
 ## Permission, channel, token
 
@@ -51,8 +52,10 @@ A successful push ticket means the service accepted the request; inspect deliver
 Register response listeners with cleanup, and handle the initial response when a notification launches a terminated app.
 Validate any URL/identifier from payload data before routing to authorized content.
 
-SDK 58 supports iOS `threadIdentifier`, Android plugin `largeIcon`, and `delivery: 'alarmClock'` for compatible date/repeating triggers.
-Exact-alarm permissions and platform scheduling rules still apply; inspect `getExactAlarmPermissionsAsync`/`requestExactAlarmPermissionsAsync` before using alarm-clock delivery.
+Set `content.threadIdentifier` to group related notifications in iOS Notification Center (and as the group key on Android).
+The Android plugin's `largeIcon` is a local image resized to 64×64 dp; a notification's own image takes precedence. Changing it requires rebuilding.
+Use `delivery: 'alarmClock'` on compatible date/repeating triggers for time-critical Android alarms; it uses `AlarmManager.setAlarmClock()` and exposes an alarm icon until delivery.
+On Android 12+, a missing exact-alarm permission falls back to `'bestEffort'`; inspect `getExactAlarmPermissionsAsync`/`requestExactAlarmPermissionsAsync` rather than promising exact delivery.
 Do not claim ordinary scheduled notifications are exact timers or bypass OS restrictions.
 
 ## Background work

@@ -52,6 +52,7 @@ Persistence differs across uninstall/reinstall and backup flows; do not use it a
 Authentication-protected values may become unreadable after biometric enrollment changes.
 
 SDK 58 adds `requireConfirmation` on Android when `requireAuthentication` is enabled.
+It defaults to `true` and applies to authenticated reads and writes. Setting it to `false` requests implicit confirmation where the biometric modality/system settings allow it.
 It is a system hint for confirmation after authentication, not an app-level confirmation dialog or a guarantee.
 Use consistent storage options on subsequent reads/updates and validate on physical devices.
 

@@ -30,7 +30,8 @@ Avoid converting large files to base64 just to send or copy them.
 For random access, use a file handle and close it in `finally`.
 
 SDK 58 adds `File.digest()`; `File.md5` is deprecated.
-For example, `await file.digest('SHA-256')` returns a lowercase hexadecimal digest.
+Accepted algorithms are `'MD5'`, `'SHA-1'`, `'SHA-256'`, `'SHA-384'`, and `'SHA-512'`; the result is lowercase hexadecimal.
+For example, use `await file.digest('SHA-256')` before comparing a file with an expected SHA-256 checksum.
 It also adds `canPreview()` and `preview()` for native viewers:
 
 ```ts

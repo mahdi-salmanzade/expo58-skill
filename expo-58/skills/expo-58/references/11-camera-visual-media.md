@@ -48,7 +48,8 @@ export async function scanPages() {
 ```
 
 The result has `pages: string[]` and optional `pdfUri`, not a picker-style `assets` array.
-On Android, document scanning uses the native ML Kit flow; the JPEG `quality` option is iOS-only in effect.
+On Android, document scanning uses ML Kit and requires Google Play Services; iOS uses VisionKit.
+`requestPdf` defaults to false; JPEG `quality` accepts 0–1 and affects iOS only. Page/PDF files are cached, so persist them explicitly when saving a scan.
 Catch native failures separately from cancellation and test actual supported hardware.
 
 ## Selection and display
@@ -64,7 +65,10 @@ export async function selectPhoto() {
 
 Use `canceled`, not the obsolete `cancelled` field. Decide whether selection, editing, and multi-selection are compatible before combining options.
 For display, import `Image` from `expo-image`; use `contentFit` and explicit layout bounds.
-SDK 58 adds `transition.skipOnCacheHit` and `svgVariables` for supported SVG CSS variables.
+SDK 58 adds `transition.skipOnCacheHit`: use `'memory'` for memory hits, `'all'` for memory/disk hits, or the default `'none'`; it is not a boolean.
+On Android/iOS, `svgVariables` substitutes an SVG's `var()` references using keys with leading `--` and string/number values, for example `{ '--accent': '#f50', '--stroke-width': 2 }`.
+Missing values use the SVG's own `var()` fallbacks, even when the prop is absent. Substitution preserves the vector and supports widths/opacity as well as colors.
+Values cannot reference another variable; use literal SVG-compatible values. `tintColor` subsequently overrides colors and rasterizes the iOS result.
 Use placeholders/error fallback for remote media; a transition does not prevent layout shift.
 For virtualized lists, keep identity/recycling behavior correct when image sources change.
 

@@ -49,7 +49,7 @@ The deprecated `useLibSQL` plugin setting only warns and has no effect; remove i
 Wait for their promises to settle before closing/reusing the connection; an interrupted write rolls back its explicit transaction.
 Use the transaction object's connection when interrupting exclusive transaction work.
 Prepared-result cursors advance with `getFirstSync` and sync iteration; call `resetSync` before reading the same result again.
-The package also ships its own agent guidance. Consult installed guidance for advanced database work.
+The package ships colocated agent guidance; optionally install it with `npx @expo/agent-cli@latest install expo-sqlite`. This sets up project guidance as well as the SDK-compatible package.
 
 ## OTA compatibility is a native contract
 
@@ -75,6 +75,7 @@ See [18-eas-full-workflow.md](18-eas-full-workflow.md) for operational commands.
 Use an update-ready UI instead of unexpectedly interrupting an edit or checkout.
 OTA behavior should be tested in a suitable release/preview build; Expo Go is not a production-update test.
 `updates.maxUpdatesToKeep` defaults to 2, including the running update; 3 retains the running update plus up to two older ones.
+A larger value can reduce repeat downloads when channel surfing; it does not change runtime compatibility.
 Retention favors matching manifest filters and recent commits. It is not a hard disk limit: other scopes and same/newer commits are outside that eviction count.
 
 ## Server data and Convex

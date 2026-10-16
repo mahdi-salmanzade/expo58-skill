@@ -57,8 +57,16 @@ SDK 55+ cannot disable it. Removing a stale `newArchEnabled: false` is appropria
 promising it will restore the bridge is not. Keep Hermes and Expo's matched native
 packages unless the task specifically requires an engine experiment.
 
-SDK 58 does not currently support macOS; track the required React Native macOS
-update before treating an iOS build as evidence of macOS support.
+SDK 58 does not currently support macOS; Expo identifies React Native macOS 0.86+
+as the prerequisite for returning support. Check that integration's actual release
+before treating an iOS build as evidence of macOS support.
+
+Expo's autolinking and module Gradle plugins support **AGP 9**. This compatibility
+does not require upgrading every app's Gradle/AGP pair to 9; retain the versions
+selected by its Expo/RN template and verify third-party plugins before changing
+them. Sources: [autolinking compatibility](https://github.com/expo/expo/pull/46766),
+[module plugin compatibility](https://github.com/expo/expo/pull/46769).
+For the Compose and Material 3 versions, see [Expo UI](03-expo-ui.md).
 
 ## Create a 58 project intentionally
 
@@ -127,7 +135,9 @@ Expo Go for SDK 58 is scheduled to reach the App Store and Google Play within a
 few weeks of the stable release. Until the matching binary is available, use a
 development build or a verified compatible Expo Go install. Check
 [expo.dev/go](https://expo.dev/go) for the actual installer. A stable SDK release
-does not upgrade an installed native client. Hardware capability is a separate
+does not upgrade an installed native client. The new store client will support
+only SDK 58; an older app needs its matching client or a development build.
+Hardware capability is a separate
 check: a successful bundle does not prove Hinge events work on a simulator.
 
 For iPhone Duo work, preserve current-window resizing, safe areas, route state, and

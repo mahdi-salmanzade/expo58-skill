@@ -84,8 +84,25 @@ Use `eas env:pull --environment preview` when the task requires local parity; pr
 If CI is requested, use scoped credentials and project-specific EAS Workflows or existing CI.
 Do not create a second release pipeline merely because a sample workflow exists.
 
+## Optional PostHog integration
+
+This EAS CLI integration works across SDK versions; adopt it when PostHog is part of the requested analytics work:
+
+```sh
+eas integrations:posthog:connect
+```
+
+It creates/links a PostHog project, installs SDK/native dependencies, adds `posthog-react-native/expo`, and writes local/EAS environment variables.
+Choose the intended US/EU region and analytics/replay/error-tracking features. Dynamic app configs require adding the printed plugin entry manually; rebuild for native changes.
+Finish the provider and release-tagging setup in the guide. Connecting alone does not insert the React provider or register every event property.
+Use `eas/update_id`, `eas/channel`, and `eas/runtime_version` from `expo-updates` as event properties; `eas/build_id` comes from a workflow build job, not an automatic in-app API.
+PostHog recognizes those names for release context and links identifiers to Expo. Development/Expo Go events have no update/channel identity.
+Error tracking also needs its source-map setup; keep its private CLI key out of public app configuration.
+`eas integrations:posthog:disconnect` removes the Expo integration link, leaving PostHog projects/data intact.
+
 ## Sources
 
+- [PostHog integration and release tagging](https://docs.expo.dev/guides/using-posthog/)
 - [EAS CLI reference](https://docs.expo.dev/eas/cli/)
 - [Build configuration](https://docs.expo.dev/build/eas-json/)
 - [Build infrastructure](https://docs.expo.dev/build-reference/infrastructure/)

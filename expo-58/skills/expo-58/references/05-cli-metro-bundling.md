@@ -46,12 +46,16 @@ Use the session ID from `command:ps` when several commands match. Events are JSO
 `--tail` follows live events. Stopped sessions retain history, so their recorded
 server URLs may no longer be reachable. Event filters match event names, not log
 severity; `--spans` omits failures and warnings without durations.
+Structured event logging also changes `EXPO_DEBUG=1` output. Parse the supported
+event stream rather than matching the previous human-readable debug messages.
 
 The separate **experimental** `@expo/agent-cli` sits above Expo CLI, EAS CLI, and
 Expo Doctor. Its release cadence is independent of SDK 58; audited version 1.0.19
 is not an Expo bundled dependency. When adopting that workflow, the documented
 setup is `npx @expo/agent-cli@latest agents:setup`; it writes agent configuration.
 Inspect its current help and changes to the project before relying on automation.
+It can delegate unsupported commands to Expo CLI; `expo-agent-cli` is its package
+alias. Neither name changes the project's SDK identity.
 
 | Agent command | Purpose |
 |---|---|
@@ -114,6 +118,11 @@ them. Do not put credentials into source or recorded command lines.
 When diagnosing a connection, check the actual advertised URL and native client's
 SDK first. Port fallback in non-interactive runs means 8081 is not guaranteed.
 
+For clients that advertise support, development manifests use relative bundle and
+debugger addresses so the connection's proxy, tunnel, or Bonjour origin remains
+usable. Inspect the resolved manifest and client capability when one client works
+but an older binary fails; do not replace those addresses with a fixed LAN host.
+
 The scene-era native template can read `RCTMetroPort` from Info.plist. A JavaScript
 cache clear cannot apply a missing native template change to an older client.
 Xcode 27 uses Device Hub; a script hard-coded to foreground Simulator.app may need
@@ -124,6 +133,14 @@ updating even when `simctl` device control still works.
 SDK 58 introduces a shared launch format for development clients and Expo Go.
 Reserved query parameters include `__expo_url`, `__expo_disable_onboarding`,
 `__expo_disable_fab`, and `__expo_disable_auto_launch`; the CLI generates them.
+The printed shape is `{scheme}://?__expo_url={manifestUrl}`, with the project URL
+encoded as a query value. Every `__expo_` key is reserved regardless of host and
+is removed before application routing.
+Setting `__expo_disable_onboarding=1` skips first-run onboarding;
+`__expo_disable_fab=1` hides the Tools button; `__expo_disable_auto_launch=1`
+suppresses automatic opening of the development menu, not launching the app.
+The latter two apply to the launched process, while onboarding completion is
+saved in preferences. [Launcher implementation](https://github.com/expo/expo/pull/50288)
 `EXPO_NO_DEV_MENU=1` disables development UI for automated runs and is the default
 in non-interactive environments; set it to `0` to restore that UI when needed.
 
@@ -151,6 +168,31 @@ The audited config sets `resolver.useWatchman = null` to inherit its watcher
 selection; it should not be described as a forced `true`. Avoid adding historical
 monorepo `watchFolders` recipes by habit. Resolve the observed import failure and
 verify both development and production exports.
+
+### Error visibility and device diagnostics
+
+Library frames in `node_modules` are no longer collapsed by default. LogBox
+retains the stack and code frame even when every frame is collapsed; the terminal
+also retains the stack. Preserve that evidence when diagnosing a dependency.
+A failed `expo run:ios` prints the Xcode log path and retains native errors. Open
+that log before treating a native compiler failure as a Metro issue. Android AVD
+and `adb` handling has also been reworked for recovery from device-tool failures;
+check the selected emulator and command output before rebuilding the application.
+Sources: [Metro frames](https://github.com/expo/expo/pull/50973),
+[LogBox](https://github.com/expo/expo/pull/50976),
+[terminal stacks](https://github.com/expo/expo/pull/50975),
+[Xcode logs](https://github.com/expo/expo/pull/48624),
+[Android device management](https://github.com/expo/expo/pull/49258).
+
+### Built-in URL and text decoding
+
+Expo's `URL`/`URLSearchParams` implementation now handles internationalized host
+names through IDNA/TR-46. Test Unicode domains and escaped query data if the app
+previously depended on rejected or normalized inputs; avoid adding another URL
+polyfill without checking the built-in behavior. The `TextDecoder` rewrite speeds
+ASCII, UTF-8, and streaming paths without requiring an application API migration.
+Sources: [URL implementation](https://github.com/expo/expo/pull/47813),
+[TextDecoder implementation](https://github.com/expo/expo/pull/48877).
 
 ## Babel and experimental Rust transforms
 

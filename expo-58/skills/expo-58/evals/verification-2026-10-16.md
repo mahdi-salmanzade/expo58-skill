@@ -66,3 +66,38 @@ App Intents, background delivery, R8 behavior, and adaptive state continuity sti
 need runtime checks in consuming apps. No Expo application or store binary is
 shipped by this skill repository, and the October 13 app-repair evaluation was
 not rerun for this documentation update.
+
+## Version 1.1.1 — full announcement coverage audit
+
+The user's follow-up prompted a section-by-section comparison with the complete
+current release announcement. Version 1.1.0 covered the principal workflows but
+did not explicitly cover every smaller engineering change.
+
+The [coverage index](../references/changelog-coverage.md) now contains 84 mapped
+rows, including named UI/Router additions, individual package changes,
+deprecations, breaking changes, toolchain updates, and creation/upgrade guidance.
+An independent review checked the destination prose against the announcement;
+this was not merely a search for package names or links. Credits, screenshots,
+benchmark figures, and other release-only material remain in the source.
+
+The completion pass added PostHog setup, native UI props/modifiers, widget and
+App Intents details, runtime/diagnostic changes, and other missing API guidance.
+It corrected the strict-types legacy opt-out timeline to the announcement's
+current wording (after RN 0.89). Stable RN 0.88's ArrayBuffer behavior and DevTools
+feature channels were checked separately from the release post's RC links.
+
+Checks performed for this follow-up:
+
+- The six example files and six Router/UI documentation snippets still pass,
+  alongside a new temporary contract file for added UI/Router symbols and props.
+- A separate temporary strict TypeScript module checks the additional package
+  APIs against the same stable dependency set. Existing general API code blocks
+  were unchanged; no native execution is implied by these checks.
+- Repository link/packaging/snapshot validation, skill frontmatter validation,
+  all four fenced JSON blocks, and whitespace validation pass.
+- Package versions and the integrity-verified snapshot are unchanged; this is a
+  documentation and coverage correction. No native builds, physical-device flows,
+  PostHog account setup, or Expo service configuration ran.
+
+Coverage is dated to the announcement inspected on October 16, not every future
+edit to that page or every entry in Expo's separate monorepo changelog.

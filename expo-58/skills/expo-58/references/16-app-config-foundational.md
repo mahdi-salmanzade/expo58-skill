@@ -53,7 +53,8 @@ npx expo install expo-font expo-splash-screen expo-asset
 Embed app fonts through the `expo-font` plugin when known at build time, or load dynamically with `useFonts`/`loadAsync`.
 SDK 58 supports variable fonts on Android, iOS, and web.
 Confirm the font's family/axes and platform behavior; a file name is not always its iOS family name.
-Use supported React Native font-variation settings only after checking the installed RN types.
+RN 0.88 supports object-style axes, for example `fontVariationSettings: { wght: 650, wdth: 90 }` on `Text`; choose tags/ranges actually present in the loaded variable font.
+Use `fontWeight`/`fontStyle` for ordinary face selection and explicit axes for finer control. Verify the rendered font on each target, not only its TypeScript shape.
 
 A root layout can call `SplashScreen.preventAutoHideAsync()` at module scope.
 Hide the splash when the app can render its initial useful screen, including a recoverable error state.
@@ -87,6 +88,7 @@ Verify source-controlled config reproduces the expected native output without un
 - [App config](https://docs.expo.dev/workflow/configuration/)
 - [Versioned config reference](https://docs.expo.dev/versions/v58.0.0/config/app/)
 - [Fonts](https://docs.expo.dev/versions/v58.0.0/sdk/font/)
+- [RN text style declarations](https://github.com/react/react-native/blob/v0.88.0/packages/react-native/Libraries/StyleSheet/StyleSheetTypes.js)
 - [SplashScreen](https://docs.expo.dev/versions/v58.0.0/sdk/splash-screen/)
 - [Constants](https://docs.expo.dev/versions/v58.0.0/sdk/constants/)
 - [Application](https://docs.expo.dev/versions/v58.0.0/sdk/application/)

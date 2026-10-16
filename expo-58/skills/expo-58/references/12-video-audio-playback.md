@@ -50,7 +50,10 @@ export function AudioButton({ uri }: { uri: string }) {
 For replay after completion, seek to the beginning before playing again as the feature requires.
 Configure `setAudioModeAsync` intentionally for interruptions, recording, silent-mode playback, and background behavior.
 Background playback requires native configuration; lock-screen controls are not a substitute for it.
-SDK 58 extends lock-screen playback controls to playlists.
+SDK 58 extends lock-screen playback controls to `AudioPlaylist`, obtained from `useAudioPlaylist({ sources })`.
+Call `playlist.setActiveForLockScreen(true, metadata, options)`, update track details with `updateLockScreenMetadata`, and call `clearLockScreenControls()` when ending ownership.
+Set `interruptionMode` to `'doNotMix'` or `'doNotMixPersistent'` for those controls.
+Sustained Android background playback needs both the `enableBackgroundPlayback` plugin setting and active lock-screen controls, alongside `shouldPlayInBackground`.
 
 ## Recording
 
@@ -63,7 +66,10 @@ Default recordings are cached; choose the documented `directory: 'document'` opt
 
 SDK 58's `AudioStream` adds `startFileRecordingAsync`/`stopFileRecordingAsync` for WAV/PCM files alongside streaming buffers.
 Use this specialized API for buffer-processing workflows, not as a replacement for ordinary recording without a reason.
-Confirm sample rate, channel count, and file options in the installed `AudioStream` declarations before creating a processing pipeline.
+Request microphone access and await `stream.start()` before `startFileRecordingAsync`; only one file recording may run per stream.
+`format: 'wav'` is the default; `'pcm'` writes raw headerless samples. Supply `uri` or choose `directory: 'document'` when cache storage is inappropriate.
+Await `stopFileRecordingAsync()` to finalize and obtain URI, duration, size, sample rate, channel count, and encoding; `stream.stop()` also finalizes an active recording.
+These file-recording methods are native Android/iOS APIs. Preserve encoding/sample-rate/channel metadata when consuming raw PCM.
 
 ## Layout and platform constraints
 
@@ -79,4 +85,6 @@ Web autoplay/user-gesture rules differ from native playback.
 - [Audio](https://docs.expo.dev/versions/v58.0.0/sdk/audio/)
 - [Audio package changelog](https://unpkg.com/expo-audio@58.0.9/CHANGELOG.md)
 - [Audio declarations](https://unpkg.com/expo-audio@58.0.9/build/ExpoAudio.d.ts)
+- [Playlist declarations](https://unpkg.com/expo-audio@58.0.9/build/AudioModule.types.d.ts)
+- [Stream recording declarations](https://unpkg.com/expo-audio@58.0.9/build/AudioStream.types.d.ts)
 - [Screen capture controls](https://docs.expo.dev/versions/v58.0.0/sdk/screen-capture/)

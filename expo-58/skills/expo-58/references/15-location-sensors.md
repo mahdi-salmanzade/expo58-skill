@@ -30,7 +30,8 @@ The next API's `timeout` and `maxCachedAge` are seconds; `position.timestamp` us
 `getPosition` can return null or an older fallback fix. Check timestamp and accuracy for freshness-critical work.
 Read `position.coordinates`, not the root API's `position.coords`.
 The default next permission request asks for precise access; select reduced accuracy when sufficient.
-On iOS, configure the purpose string for temporary full accuracy; approximate-only apps can omit it via the plugin.
+On iOS, `Location.requestForegroundPermissions({ accuracy: RequestPermissionsAccuracyOption.FULL })` can request temporary full accuracy when access is reduced.
+The plugin writes its purpose string by default; setting `locationFullAccuracyPermission: false` removes it and skips that prompt.
 
 `Location.watchPosition({ onPosition, onError, ... })` returns a `PositionWatchHandle`.
 Pause on screen blur, resume on focus, and `dispose()` on unmount.

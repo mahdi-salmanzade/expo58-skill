@@ -5,7 +5,7 @@ support. Built from the Expo 56/57 skills, refreshed against SDK 58 documentatio
 and published packages, and integrated with the iPhone Duo skill's adaptation
 workflow.
 
-**Version 1.1.0 · Snapshot: October 16, 2026.** Expo SDK 58 is **stable**, released
+**Version 1.1.1 · Snapshot: October 16, 2026.** Expo SDK 58 is **stable**, released
 October 15. The skill checks the project's actual SDK before applying its guidance.
 See [Expo's release announcement](https://expo.dev/changelog/sdk-58)
 and the [recorded package snapshot](expo-58/skills/expo-58/references/sdk-versions.json).
@@ -102,7 +102,10 @@ upgrades through 57; it does not silently upgrade an existing app.
 - **Reusable examples and evaluation scenarios** for the SDK and foldable APIs.
 
 Start with [SKILL.md](expo-58/skills/expo-58/SKILL.md) for the full reference map.
-The references are selective engineering guidance, not an exhaustive API mirror.
+Use the [release coverage index](expo-58/skills/expo-58/references/changelog-coverage.md)
+to trace the announcement's named changes to their guidance. Version 1.1.1 fills
+the smaller API and tooling gaps from the 1.1.0 pass. The references explain
+engineering decisions; use linked API docs for complete signatures.
 
 ## iPhone Duo companion
 

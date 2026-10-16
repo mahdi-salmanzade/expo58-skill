@@ -94,8 +94,8 @@ Use the [RN strict API migration](https://reactnative.dev/docs/strict-typescript
 for codegen exports and other type changes. Check dependency updates before adding
 type casts. A temporary deferral is `customConditions: ["react-native",
 "react-native-legacy-deep-imports"]` while retaining `extends: "expo/tsconfig.base"`.
-The legacy opt-out is scheduled for removal after RN 0.88; it does not restore
-removed runtime APIs.
+The current SDK 58 changelog schedules the legacy opt-out for removal after
+RN 0.89; migrate during the SDK 58 cycle. It does not restore removed runtime APIs.
 
 Search for `InteractionManager`, the root `Touchable` export, `NativeMethods`,
 `Modal`'s `animated` prop, and obsolete `StatusBar` props. Replace deferred
@@ -222,6 +222,21 @@ Build a new runtime for SDK 58. Do not send 58 JavaScript to a 57 binary. Keep t
 previous build/update runtime available and avoid irreversible local data migrations
 until compatibility is understood. Rolling back a Git commit alone does not undo
 data changes or a distributed native binary.
+
+## Further upgrade assistance
+
+Expo also maintains an optional
+[`expo-upgrade` skill](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-upgrade).
+For a large strict-types migration, React Native's
+[`migrate-to-strict-api` guide and skill](https://reactnative.dev/docs/strict-typescript-api)
+provide additional assistance. These are companion resources, not prerequisites
+for this skill. Apply only changes appropriate to the app's SDK and native ownership.
+
+The release announcement is a curated list. Review affected packages in the
+[full Expo changelog](https://github.com/expo/expo/blob/main/CHANGELOG.md) and their
+installed changelogs before a complex migration; moving `main` may contain
+unreleased work. Use the [upgrade troubleshooting guide](https://expo.fyi/troubleshooting-sdk-upgrades)
+when a package, native project, or runtime still fails after alignment.
 
 ## Evidence
 
