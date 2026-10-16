@@ -1,6 +1,6 @@
 # EAS build, update, and distribution workflow — SDK 58
 
-Verified 2026-10-13. EAS is a service/CLI with its own release cadence; SDK dependencies are in [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. EAS is a service/CLI with its own release cadence; SDK dependencies are in [sdk-versions.json](sdk-versions.json).
 Run only the operations required by the user's task and existing authorization.
 
 ## Establish the intended target
@@ -47,6 +47,8 @@ A small `eas.json` starting point, to merge with existing configuration:
 A development profile requires `expo-dev-client` installed in the application.
 A simulator build is a separate iOS artifact configuration, not a device-installable IPA.
 Choose current build images for toolchain needs; do not paste an SDK 57 image into SDK 58 by habit.
+Cloud image, simulator runtime, and store-distributed Expo Go availability evolve independently of SDK 58's stable npm release.
+Check the infrastructure catalog for required Xcode/runtime support before scheduling a build or a Duo test.
 
 ```sh
 eas build --platform ios --profile preview

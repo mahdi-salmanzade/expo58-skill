@@ -1,6 +1,6 @@
 # Development feedback and meaningful verification — SDK 58
 
-Verified 2026-10-13. Use [sdk-versions.json](sdk-versions.json) for version evidence.
+Verified 2026-10-16. Use [sdk-versions.json](sdk-versions.json) for version evidence.
 
 ## Match the test environment to the feature
 
@@ -15,6 +15,8 @@ Verified 2026-10-13. Use [sdk-versions.json](sdk-versions.json) for version evid
 
 A passing JS bundle is necessary but does not prove a native feature works.
 Keep native compilation, type checking, and interactive behavior as distinct evidence.
+As of the October 15 stable announcement, SDK 58's store-distributed Expo Go was still pending and unqualified `create-expo-app` still selected SDK 57.
+Use the explicit SDK 58 template/development-build workflow in [01-core-setup-upgrade.md](01-core-setup-upgrade.md); check current availability rather than assuming the store client is ready.
 
 ## Fast local loop
 
@@ -41,9 +43,11 @@ npx expo install expo-device-hub
 npx expo start
 ```
 
-The experimental `@expo/agent-cli` can inspect project compatibility and coordinate a development session.
-Inspect its help before adopting it; preserve an existing CLI workflow unless replacing it is useful to the task.
-Its agent setup/skill synchronization modifies project guidance, so use it as an intentional setup step.
+The experimental `@expo/agent-cli` can inspect compatibility and coordinate development sessions; see [05-cli-metro-bundling.md](05-cli-metro-bundling.md) for commands and setup boundaries.
+SDK 58 also standardizes launch parameters shared by Expo Go and development clients.
+`__expo_disable_onboarding=1`, `__expo_disable_fab=1`, and `__expo_disable_auto_launch=1` help deterministic device tests.
+`EXPO_NO_DEV_MENU=1` asks the CLI to include those flags; noninteractive runs already disable that UI by default.
+Use `EXPO_NO_DEV_MENU=0` when intentionally testing the development UI. Keep the returned launch URL, including its actual server port.
 
 ## Test behavior at the right level
 
@@ -67,8 +71,10 @@ Record unavailable device/runtime cases as untested instead of passing them by a
 
 ## Observe and diagnostics
 
+Expo Observe captures startup/navigation performance, JavaScript errors, and native crashes.
 `expo-observe` exposes `Observe` and `ObserveErrorBoundary`; `AppMetrics` is deprecated.
-`Observe.reportError` handles explicitly caught errors; configure automatic capture deliberately.
+`Observe.reportError` handles explicitly caught errors; `errorHandlingEnabled: false` disables automatic unhandled-JS capture.
+`Observe.clientId` can correlate an installation with other diagnostics; handle its nullable value and avoid using it as authentication.
 Inspect production data only when the task and account access support it.
 Keep diagnostic payloads focused and avoid sending session tokens or full private records in logs.
 
@@ -78,4 +84,4 @@ Keep diagnostic payloads focused and avoid sending session tokens or full privat
 - [Unit testing](https://docs.expo.dev/develop/unit-testing/)
 - [End-to-end testing](https://docs.expo.dev/eas/workflows/examples/e2e-tests/)
 - [Observe](https://docs.expo.dev/versions/v58.0.0/sdk/observe/)
-- [SDK 58 development tooling](https://expo.dev/changelog/sdk-58-beta)
+- [SDK 58 development tooling](https://expo.dev/changelog/sdk-58)

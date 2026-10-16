@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import date
 import json
 from pathlib import Path
 import re
@@ -73,17 +74,27 @@ def validate(root: Path) -> list[str]:
 
     snapshot = read_json(skill / "references/sdk-versions.json")
     require(snapshot.get("schemaVersion") == 1, "Unsupported package snapshot schema")
-    require(bool(snapshot.get("auditedAt")), "Snapshot has no audit date")
+    try:
+        date.fromisoformat(snapshot.get("auditedAt", ""))
+    except (TypeError, ValueError):
+        errors.append("Snapshot audit date must be YYYY-MM-DD")
     require(bool(snapshot.get("sources")), "Snapshot has no source provenance")
     sdk = snapshot.get("sdk58", {})
     require(bool(re.fullmatch(r"58\.\d+\.\d+", sdk.get("expoVersion", ""))), "Snapshot is not Expo 58")
+    require(sdk.get("releaseStatus") in {"beta", "stable"}, "Snapshot release status must be beta or stable")
     bundled = sdk.get("bundledNativeModules", {})
     for name in ("react", "react-native", "expo-router", "@expo/ui", "expo-hinge"):
         require(bool(bundled.get(name)), f"Snapshot lacks bundled package: {name}")
     require(bool(sdk.get("provenance", {}).get("integrity")), "Expo tarball integrity missing")
-    require(bool(sdk.get("template", {}).get("dependencies")), "Template dependencies missing")
+    template_dependencies = sdk.get("template", {}).get("dependencies", {})
+    require(bool(template_dependencies), "Template dependencies missing")
+    for name in ("react", "react-native", "react-native-reanimated", "react-native-worklets"):
+        require(bool(bundled.get(name)) and template_dependencies.get(name) == bundled.get(name),
+                f"Template/bundled dependency mismatch: {name}")
 
     evaluations = read_json(skill / "evals/evals.json")
+    require(evaluations.get("snapshot_date") == snapshot.get("auditedAt"),
+            "Evaluation date does not match package snapshot")
     ids: set[str] = set()
     for case in evaluations.get("evals", []):
         case_id = case.get("id", "")

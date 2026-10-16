@@ -1,6 +1,6 @@
 # Camera, scanning, images, and editing — SDK 58
 
-Verified 2026-10-13 against SDK docs and published package declarations. Pins: [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16 against SDK docs and published package declarations. Pins: [sdk-versions.json](sdk-versions.json).
 
 ```sh
 npx expo install expo-camera expo-image expo-image-picker expo-image-manipulator

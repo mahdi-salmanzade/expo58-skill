@@ -1,6 +1,6 @@
 # Authentication and protected local storage — SDK 58
 
-Verified 2026-10-13. Versions: [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Versions: [sdk-versions.json](sdk-versions.json).
 
 ```sh
 npx expo install expo-auth-session expo-web-browser expo-crypto expo-secure-store expo-local-authentication

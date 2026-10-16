@@ -1,6 +1,6 @@
 # Native modules and config plugins — SDK 58
 
-Verified 2026-10-13. SDK 58 is on the beta track; dependency authority is [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. SDK 58 is stable; dependency authority is [sdk-versions.json](sdk-versions.json).
 
 ## Choose the smallest native boundary
 
@@ -68,7 +68,31 @@ npx expo config --type introspect
 Inspect the generated diff in a disposable checkout before changing an existing native app.
 Do not run `prebuild --clean` on hand-maintained native directories as a routine repair.
 For manually managed AppDelegate overrides, use the scene lifecycle migration guide.
-App Intents remain alpha and require their separate package/setup; they are not ordinary JS exports.
+
+## App Intents remain alpha
+
+`expo-app-intents` connects iOS Siri/Shortcuts and Spotlight to app-defined native intents/entities.
+Install its compatible package, initialize the app-target Swift sources, and rebuild:
+
+```sh
+npx expo install expo-app-intents
+npx expo-app-intents init
+```
+
+The initializer adds the plugin and watches `app-intents` through `experiments.inlineModules.watchedDirectories`.
+Declare intent/entity/query types and shortcut phrases in Swift; JavaScript cannot dynamically declare new intent types.
+Use `import * as AppIntents from 'expo-app-intents'` for the JS APIs and gate with `isAvailable()`.
+`setEntityCatalogAsync` replaces a named catalog; publish a compact relevant subset and keep stable entity IDs.
+Indexed Swift registration enables Spotlight; ordinary catalog publication does not invent native registration.
+
+`useAppIntents` delivers pending and live invocations. Apply actions idempotently by invocation `id`, then call `removePendingInvocationAsync(id)`.
+The queue is bounded to 100 entries and does not remove handled items automatically.
+Native dispatch can persist work while JS is stopped; it does not wait for a JS result for Siri.
+Headless execution through TaskManager is announced as coming soon, so a background Siri response still needs a native implementation.
+
+Associate visible content with `AppEntityView` for React Native or `appEntityIdentifier()` for Expo UI.
+That association requires iOS 18.4+ and Xcode 27+; unsupported versions render the view without the association.
+Test real-device shortcuts, a cold launch, duplicate delivery, sign-out/deleted entities, and unavailable platforms.
 
 ## Validation
 
@@ -81,6 +105,8 @@ A TypeScript check alone cannot detect missing autolinking or binary incompatibi
 - [Module creation](https://docs.expo.dev/modules/get-started/)
 - [Modules API](https://docs.expo.dev/modules/module-api/)
 - [Modules 2.0 design and migration](https://expo.dev/blog/an-early-look-at-expo-modules-2-0)
-- [SDK 58 beta release notes](https://expo.dev/changelog/sdk-58-beta)
+- [SDK 58 release notes](https://expo.dev/changelog/sdk-58)
+- [AppIntents setup and native/JS boundary](https://docs.expo.dev/versions/v58.0.0/sdk/app-intents/)
+- [Published AppIntents declarations](https://unpkg.com/expo-app-intents@0.5.8/build/index.d.ts)
 - [Config plugins](https://docs.expo.dev/config-plugins/introduction/)
 - [Scene lifecycle migration](https://expo.fyi/ios-scene-lifecycle)

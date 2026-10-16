@@ -1,6 +1,6 @@
 # Files, transfers, and connectivity — SDK 58
 
-Verified 2026-10-13. Install compatible packages with Expo; version pins live in [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Install compatible packages with Expo; version pins live in [sdk-versions.json](sdk-versions.json).
 
 ```sh
 npx expo install expo-file-system expo-network expo-document-picker

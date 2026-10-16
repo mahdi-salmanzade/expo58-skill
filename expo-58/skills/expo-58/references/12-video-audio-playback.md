@@ -1,6 +1,6 @@
 # Video and audio lifecycle — SDK 58
 
-Verified 2026-10-13. Use [sdk-versions.json](sdk-versions.json) for compatible versions.
+Verified 2026-10-16. Use [sdk-versions.json](sdk-versions.json) for compatible versions.
 
 ```sh
 npx expo install expo-video expo-audio

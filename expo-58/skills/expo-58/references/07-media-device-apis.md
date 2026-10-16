@@ -1,6 +1,6 @@
 # Contacts, calendars, photos, and device feedback — SDK 58
 
-Verified 2026-10-13. Install only the packages needed; [sdk-versions.json](sdk-versions.json) records the SDK snapshot.
+Verified 2026-10-16. Install only the packages needed; [sdk-versions.json](sdk-versions.json) records the SDK snapshot.
 
 ```sh
 npx expo install expo-contacts expo-calendar expo-media-library expo-haptics expo-asset
@@ -69,6 +69,9 @@ export async function firstPhotos() {
 Use asset getters for metadata; do not assume a native asset's `id` is a readable local file path.
 Handle limited photo access, cloud-backed assets, empty results, and permission changes while the app is backgrounded.
 Keep persistent app files and system photo-library records distinct when deleting or exporting.
+On iOS, `Asset.getUri()` and `AssetInfo.uri` now use the current edited video from Photos by default.
+Request `AssetUriVersion.ORIGINAL` through the asset URI options when the unedited source is required.
+The root package re-exports the object API from `/next`; keep its URI options distinct from legacy function options.
 
 ## Feedback and assets
 
@@ -82,5 +85,6 @@ Check the asset extension and Metro configuration for nonstandard formats rather
 - [Contacts](https://docs.expo.dev/versions/v58.0.0/sdk/contacts/)
 - [Calendar](https://docs.expo.dev/versions/v58.0.0/sdk/calendar/)
 - [MediaLibrary](https://docs.expo.dev/versions/v58.0.0/sdk/media-library/)
+- [Published asset URI contract](https://unpkg.com/expo-media-library@58.0.9/build/next/js/AssetAlbum.d.ts)
 - [Haptics](https://docs.expo.dev/versions/v58.0.0/sdk/haptics/)
 - [Asset](https://docs.expo.dev/versions/v58.0.0/sdk/asset/)

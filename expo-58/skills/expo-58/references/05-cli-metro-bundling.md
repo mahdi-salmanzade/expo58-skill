@@ -1,9 +1,9 @@
 # SDK 58: CLI, Metro, environment, and bundling
 
-Audited **2026-10-13** against `expo@58.0.8`, `@expo/cli@58.1.7`,
-`@expo/metro-config@58.0.12`, and `babel-preset-expo@58.0.13` published artifacts.
+Audited **2026-10-16** against `expo@58.0.12`, `@expo/cli@58.1.10`,
+`@expo/metro-config@58.0.14`, and `babel-preset-expo@58.0.16` published artifacts.
 See [sdk-versions.json](sdk-versions.json) for dependency ranges and provenance.
-Beta notes can describe an earlier implementation than the installed package.
+Use the installed patch's source when release notes describe an older behavior.
 
 ## Keep SDK and CLI identity separate
 
@@ -32,6 +32,39 @@ Prebuild's `--platform ios` or `--platform android` scopes generation, not the
 ownership decision. Preserve manual native code and compare a scratch generated
 project for maintained native apps. `--no-clean` is not a substitute for migration.
 
+## Agent diagnostics and the optional agent CLI
+
+The following local CLI commands are **experimental**. They expose session state
+and retained events without guessing a port or starting a second dev server:
+
+```sh
+npx expo command:ps --active --json
+npx expo command:events "expo start" --since 5m
+```
+
+Use the session ID from `command:ps` when several commands match. Events are JSONL;
+`--tail` follows live events. Stopped sessions retain history, so their recorded
+server URLs may no longer be reachable. Event filters match event names, not log
+severity; `--spans` omits failures and warnings without durations.
+
+The separate **experimental** `@expo/agent-cli` sits above Expo CLI, EAS CLI, and
+Expo Doctor. Its release cadence is independent of SDK 58; audited version 1.0.19
+is not an Expo bundled dependency. When adopting that workflow, the documented
+setup is `npx @expo/agent-cli@latest agents:setup`; it writes agent configuration.
+Inspect its current help and changes to the project before relying on automation.
+
+| Agent command | Purpose |
+|---|---|
+| `status` | Inspect project readiness and Expo Go compatibility without launching |
+| `dev` | Choose a compatible client, build when needed, and start the app |
+| `smoke` | Launch, capture a screenshot, and stop; can also build a client |
+| `skills:sync` | Configure package-provided skills from `node_modules` |
+
+Use `status` for inspection. `dev` and `smoke` perform build/launch work and are
+appropriate when the task calls for it; a screenshot is not a functional test.
+See [the agent CLI source](https://github.com/expo/expo-agent-cli)
+and the [published package](https://registry.npmjs.org/@expo/agent-cli/1.0.19).
+
 ## Environment mode now belongs to the command
 
 SDK 58 initializes the environment mode before loading `.env` and dynamic app
@@ -59,9 +92,13 @@ client code and are not a secret storage mechanism. Preserve statically accessib
 [environment guide](https://docs.expo.dev/guides/environment-variables/) for the
 current `.env` cascade and EAS environment handling.
 
+Metro now invalidates transformed modules when `EXPO_PUBLIC_*` values change.
+Still verify the actual bundled value under the target environment; changing
+client-side environment variables never rotates a server-side secret.
+
 ## SDK 58 tunnel behavior: audit the current patch
 
-At CLI **58.1.7**, `npx expo start --tunnel` selects the Expo tunnel by default.
+At CLI **58.1.10**, `npx expo start --tunnel` selects the Expo tunnel by default.
 Its help accepts `--tunnel [provider]`; `--tunnel ngrok` is the legacy provider.
 The beta announcement's `EXPO_UNSTABLE_TUNNEL_V2=1` recipe is historical at this
 patch: do not require that flag or install `@expo/ngrok` for the default tunnel.
@@ -81,6 +118,21 @@ The scene-era native template can read `RCTMetroPort` from Info.plist. A JavaScr
 cache clear cannot apply a missing native template change to an older client.
 Xcode 27 uses Device Hub; a script hard-coded to foreground Simulator.app may need
 updating even when `simctl` device control still works.
+
+## Development launch URLs
+
+SDK 58 introduces a shared launch format for development clients and Expo Go.
+Reserved query parameters include `__expo_url`, `__expo_disable_onboarding`,
+`__expo_disable_fab`, and `__expo_disable_auto_launch`; the CLI generates them.
+`EXPO_NO_DEV_MENU=1` disables development UI for automated runs and is the default
+in non-interactive environments; set it to `0` to restore that UI when needed.
+
+Legacy launch formats remain supported. Prefer the advertised launch URL over
+hand-building one, and rebuild older clients before expecting new launch behavior.
+Use `unwrapDevLaunchURL` from `expo-linking` when interpreting a launch wrapper;
+application routes should not treat the reserved Expo parameters as app input.
+See [development workflow](19-dev-workflow-testing.md) and
+[Expo CLI environment variables](https://docs.expo.dev/more/expo-cli/).
 
 ## Start with Expo's Metro configuration
 
@@ -115,8 +167,9 @@ module.exports = function (api) {
 
 `experiments.noxcturnalTransformWorker` opts into the experimental Rust transformer.
 It is not a required migration or a promised 2× improvement for this app. The
-beta implementation falls back to Babel for worklet transforms and has restrictions
-around custom plugins, presets, and transform workers. Test a production export
+current implementation falls back to Babel for worklet transforms and only
+activates without custom Babel plugins/presets or a custom transform worker.
+Test a production export
 with the real configuration before enabling it for build pipelines.
 
 Changing Babel or Metro configuration requires a dev-server restart; changing
@@ -124,6 +177,25 @@ native module versions also requires a new native binary. Treat these as differe
 operations when diagnosing a Worklets version mismatch.
 
 ## Router web exports and async chunks
+
+An unspecified `web.output` now defaults to `"server"`, which renders HTML per
+request. Review deployment support before upgrading a static-only host. To retain
+prerendered HTML **and** API routes, merge these settings into existing app config:
+
+```json
+{
+  "expo": {
+    "web": { "output": "static" },
+    "plugins": [["expo-router", { "apiRoutes": true }]]
+  }
+}
+```
+
+API routes still need a server deployment. A site with no server features can use
+static output without that plugin option. Test production output with
+`npx expo export --platform web` and `npx expo serve`; serve rejects `--dev` exports
+that contain server code. Follow [Router migration](02-expo-router.md) for custom
+`+html.tsx`, metadata, loader caching, and web safe-area changes.
 
 Router 58 enables asynchronous routes on web by default. Test direct navigation,
 reloads, and lazy-loaded chunks against the deployment path, not only the Metro
@@ -146,9 +218,9 @@ connection; an HTTP response from Metro alone does not demonstrate it.
 
 ## Sources
 
-- [Published CLI 58.1.7](https://registry.npmjs.org/@expo/cli/58.1.7): `build/src/start/index.js`, `start/resolveOptions.js`, `start/server/BundlerDevServer.js`, `prebuild/index.js`, `utils/nodeEnv.js`.
-- [Metro config 58.0.12](https://registry.npmjs.org/@expo/metro-config/58.0.12): `build/ExpoMetroConfig.js`.
-- [Babel preset 58.0.13](https://registry.npmjs.org/babel-preset-expo/58.0.13): `build/configs/expo.js`.
+- [Published CLI 58.1.10](https://registry.npmjs.org/@expo/cli/58.1.10): `build/src/start/index.js`, `start/resolveOptions.js`, `command/`, `prebuild/index.js`, `utils/nodeEnv.js`.
+- [Metro config 58.0.14](https://registry.npmjs.org/@expo/metro-config/58.0.14): `build/ExpoMetroConfig.js`.
+- [Babel preset 58.0.16](https://registry.npmjs.org/babel-preset-expo/58.0.16): `build/configs/expo.js`.
 - [Metro configuration reference](https://docs.expo.dev/versions/v58.0.0/config/metro/).
 - [Router 57 → 58 migration](https://docs.expo.dev/router/migrate/sdk-57-to-58/).
-- [SDK 58 beta release notes](https://expo.dev/changelog/sdk-58-beta).
+- [SDK 58 stable release notes](https://expo.dev/changelog/sdk-58).

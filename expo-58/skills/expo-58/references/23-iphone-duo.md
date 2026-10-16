@@ -1,6 +1,6 @@
 # iPhone Duo support for Expo 58
 
-Checked **2026-10-13**. This reference is self-contained for an Expo compatibility pass. It adapts the supplied `iphone-duo` skill's workflow to SDK 58, replacing its September beta/toolchain snapshot with current verified package guidance.
+Checked **2026-10-16**. This reference is self-contained for an Expo compatibility pass. It adapts the supplied `iphone-duo` skill's workflow to SDK 58, replacing its September beta/toolchain snapshot with current verified package guidance.
 
 If the separate [iphone-duo skill](https://github.com/mahdi-salmanzade/iphone-duo-skill) is installed, use it alongside this reference for a wider existing-app audit, Apple's illustration catalog, UIKit/SwiftUI modules, camera accessories, or native reserved-region work. Discover it through the environment's skill catalog; do not depend on the author's local absolute path. The companion is optional for the Expo workflow below. Its older framework snapshot must not override the current installed Expo contracts.
 
@@ -8,9 +8,27 @@ If the separate [iphone-duo skill](https://github.com/mahdi-salmanzade/iphone-du
 
 Trace entry points, navigator ownership, shared layout wrappers, state stores, modals, camera/media flows, and existing tests. Locate the actual app in a monorepo and inspect uncommitted work. Fix shared constraints before duplicating fixes in every screen. A repository search identifies leads; reproduce the affected interaction when runtime access is available. Source-confirmed failures, such as dereferencing a nullable hinge value, can be repaired without a device; distinguish that evidence from reproduced platform behavior.
 
-Record the Expo, React Native, Router, and UI versions; Xcode version/build; linked iOS SDK; deployment target; simulator runtime; and the local or EAS build path. SDK 58 remains a beta line at this check date. An OTA update cannot add a native module or change the SDK that linked the app.
+Record the Expo, React Native, Router, and UI versions; Xcode version/build; linked iOS SDK; deployment target; simulator runtime; and the local or EAS build path. SDK 58 was released on October 15, 2026. Its scene and geometry changes support the folded and open displays; hinge-specific interactions and arrangements still need the iOS 27.1 SDK and runtime. An OTA update cannot add a native module or change the SDK that linked the app.
 
-For native Duo APIs, use an iOS 27.1-capable toolchain. The [EAS infrastructure page](https://docs.expo.dev/build-reference/infrastructure/) currently lists `macos-tahoe-26.6-xcode-27.1` as **Xcode 27.1 RC (27A9275)**. The `sdk-58` alias still selects Xcode 27.0. Verify the actual “Spin up build environment” log rather than relying on an alias or describing an RC as a final toolchain. Local builds use the selected Xcode. Expo Go and old development clients retain the native capabilities they were built with.
+For native Duo APIs, use an iOS 27.1-capable toolchain. The [EAS infrastructure page](https://docs.expo.dev/build-reference/infrastructure/) currently lists `macos-tahoe-26.6-xcode-27.1` as **Xcode 27.1 RC (27A9275)**. The `sdk-58` alias still selects `macos-tahoe-26.6-xcode-27.0` (Xcode 27.0, build 27A266a); `latest` still selects Xcode 26.6 in this snapshot. Verify the actual “Spin up build environment” log rather than relying on an alias or describing an RC as a final toolchain. Local builds use the selected Xcode. Expo Go and old development clients retain the native capabilities they were built with.
+
+Pin the Duo-capable image in an existing EAS profile when using these APIs (merge with the project's other profile settings):
+
+```json
+{
+  "build": {
+    "duo-development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": { "image": "macos-tahoe-26.6-xcode-27.1" }
+    }
+  }
+}
+```
+
+Use `@expo/ui@~58.0.19` from the current SDK manifest: it no longer ships the precompiled iOS UI framework, so Xcode 27.1 builds include `ArrangementView`/`onHingeChange` without a `buildFromSource` override. Rebuild after upgrading. `58.0.18` also fixes native `Form`/`List` insets next to the Duo rail. [Expo UI package changelog](https://www.npmjs.com/package/@expo/ui/v/58.0.19)
+
+Xcode 27 uses Device Hub in place of Simulator.app; current Expo CLI can boot and focus its devices. The optional `expo-device-hub` dev-tools plugin adds a local browser dashboard. SDK 58 Expo Go store releases were still pending in the release announcement; use a development build or verify the installed client's SDK before testing. [SDK 58 release](https://expo.dev/changelog/sdk-58)
 
 SDK 58 adopts the scene lifecycle. Generated native projects gain `SceneDelegate.swift` and a scene manifest; hand-maintained projects and direct app-delegate hooks need the [scene migration guide](https://expo.fyi/ios-scene-lifecycle). Default scene support does **not** enable multiple app windows: Expo's manifest example sets `UIApplicationSupportsMultipleScenes` to false. Preserve native customizations; use config plugins for persistent generated changes and inspect the installed prebuild command before regenerating native folders.
 

@@ -10,10 +10,11 @@ description: >-
 
 # Expo SDK 58 + iPhone Duo
 
-An unofficial reference checked on **2026-10-13**. Expo's release announcement
-labels SDK 58 **beta** at this snapshot. Published `58.0.x` packages do not by
-themselves establish stable release status. Check the current announcement and
-registry when the user asks for the latest release.
+An unofficial reference checked on **2026-10-16**. **Expo SDK 58 is stable**, released
+October 15, 2026. The audited packages are Expo **58.0.12** and React Native
+**0.88.0**. Check the current announcement and registry when the user asks for the
+latest patch. Individual features keep their own status: Expo Modules 2.0 is beta,
+App Intents is alpha, and the agent CLI is experimental.
 
 ## Establish the target
 
@@ -38,7 +39,7 @@ upgrade, a navigation rewrite, or a store submission.
 Use the project's installed types/source for callable imports and signatures, and
 its `expo/bundledNativeModules.json` for compatible package ranges. Use
 [versioned Expo docs](https://docs.expo.dev/versions/v58.0.0/) for documented
-requirements and [release notes](https://expo.dev/changelog/sdk-58-beta) for
+requirements and [release notes](https://expo.dev/changelog/sdk-58) for
 migration and release status. Published package tarballs establish what shipped;
 unpublished `main` changes do not.
 
@@ -52,6 +53,11 @@ Read only references relevant to the task. The documents contain practical API
 guidance, migration decisions, and official source links, rather than a complete
 copy of each API manual. EAS infrastructure, Expo Go availability, and store
 requirements are live state; verify them when they affect the work.
+
+During the Expo Go store transition, use the explicit SDK 58 template and a
+development build. The stable SDK release does not mean the store's Expo Go binary
+already contains SDK 58. When migrating web apps, review the new default server
+output before deploying an existing static export. See references 01, 05, and 21.
 
 ## iPhone Duo and foldables
 
@@ -83,8 +89,8 @@ require the companion merely to use `expo-hinge` or build a responsive Expo view
 | Setup, SDK detection, tooling, project creation | [01 — Core setup](references/01-core-setup-upgrade.md) |
 | Routes, layouts, stacks, tabs, links, split navigation | [02 — Expo Router](references/02-expo-router.md) |
 | SwiftUI, Jetpack Compose, hosting React Native views | [03 — Expo UI](references/03-expo-ui.md) |
-| Native modules, inline modules, config plugins | [04 — Modules API](references/04-expo-modules-api.md) |
-| CLI, Metro, environment variables, prebuild | [05 — CLI and bundling](references/05-cli-metro-bundling.md) |
+| Native modules, inline modules, App Intents, config plugins | [04 — Modules API](references/04-expo-modules-api.md) |
+| CLI, agent CLI, Metro, environment variables, prebuild | [05 — CLI and bundling](references/05-cli-metro-bundling.md) |
 | Files, directories, upload/download, networking | [06 — Filesystem and networking](references/06-filesystem-networking.md) |
 | Calendar, contacts, media library, haptics, assets | [07 — Device APIs](references/07-media-device-apis.md) |
 | SQLite, Updates, runtime compatibility, Convex | [08 — Data and updates](references/08-sqlite-updates-convex.md) |

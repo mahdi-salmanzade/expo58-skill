@@ -1,21 +1,21 @@
 # SDK 58: animation, gestures, and native dependency alignment
 
-Audited **2026-10-13** against the published Expo 58.0.8 bundle map and third-party
+Audited **2026-10-16** against the published Expo 58.0.12 bundle map and third-party
 package sources. Read [sdk-versions.json](sdk-versions.json) for the complete map.
-SDK 58 is beta and its React Native dependency remains `0.88.0-rc.4` at this audit.
+SDK 58 is stable and its audited React Native dependency is `0.88.0`.
 
 ## Treat these as a compatible set
 
-| Library | SDK 58 | SDK 57 (`expo@57.0.28`) |
+| Library | SDK 58 | SDK 57 (`expo@57.0.30`) |
 |---|---|---|
-| Reanimated | `4.7.0` | `4.5.1` |
+| Reanimated | `4.7.1` | `4.5.1` |
 | Worklets | `0.13.0` | `0.10.1` |
-| Gesture Handler | `~3.2.1` | `~2.32.0` |
-| Screens | `~4.29.0` | `~4.26.0` |
-| Safe Area Context | `~5.9.1` | `~5.7.0` |
-| Keyboard Controller | `1.22.4` | `1.21.9` |
-| Skia | `2.13.1` | `2.6.2` |
-| SVG | `15.15.5` | `15.15.4` |
+| Gesture Handler | `~3.3.0` | `~2.32.0` |
+| Screens | `~4.30.0` | `~4.26.0` |
+| Safe Area Context | `~5.10.1` | `~5.7.0` |
+| Keyboard Controller | `1.22.7` | `1.21.9` |
+| Skia | `2.14.0` | `2.6.2` |
+| SVG | `15.16.0` | `15.15.4` |
 
 Install via Expo to use the map belonging to the app's actual SDK:
 
@@ -24,16 +24,16 @@ npx expo install react-native-reanimated react-native-worklets react-native-gest
 npx expo install --check
 ```
 
-Reanimated 4.7.0 peers Worklets `0.13.x` and RN `0.86 - 0.88`.
-Worklets 0.13.0 peers RN `0.86 - 0.88`. The Expo-specified RC is the audited
-combination; dependency managers may have prerelease-range quirks, which are not a
-reason to install a different RN family or suppress all dependency validation.
+Reanimated 4.7.1 peers Worklets `0.13.x` and RN `0.86 - 0.88`.
+Worklets 0.13.0 peers RN `0.86 - 0.88`. The Expo-specified stable RN 0.88.0 is the audited
+combination. If upgrading an earlier SDK 58 beta, realign the entire set rather
+than retaining its RC or suppressing dependency validation.
 Do not combine Reanimated 4.7 with SDK 57's Worklets 0.10.1.
 
 ## Babel and rebuilds
 
 With `babel-preset-expo`, Worklets configuration is automatic after installation.
-The 58.0.13 preset resolves `react-native-worklets/plugin`. Avoid duplicate manual
+The 58.0.16 preset resolves `react-native-worklets/plugin`. Avoid duplicate manual
 Reanimated/Worklets plugins copied from older guides.
 
 After changing Babel configuration, restart Metro with `--clear`. After changing
@@ -52,7 +52,7 @@ JavaScriptCore debugging is not compatible with the native Reanimated runtime.
 ## Gesture Handler 3: choose the appropriate migration scope
 
 The new API uses hooks such as `usePanGesture` and `useTapGesture`, configured with
-objects. Published 3.2.1 still exports `Gesture` builders. Existing builder-based
+objects. Published 3.3.0 still exports `Gesture` builders. Existing builder-based
 code is not automatically invalid, but legacy types and rewritten wrapped
 components need review. Migrate an interacting gesture group together; hooks and
 legacy gestures cannot form cross-API relations.
@@ -109,7 +109,7 @@ export function SpringHandle() {
 ```
 
 Do not use `minDistance` together with `activeOffsetX/Y` or `failOffsetX/Y` in the
-3.2.1 hook configuration: the package validates and rejects those combinations.
+3.3.0 hook configuration: the package validates and rejects those combinations.
 Choose the activation model that matches the interaction.
 
 ## Native wrapper and composition traps
@@ -159,6 +159,6 @@ Do not claim hardware validation unless it was performed.
 - [Expo Reanimated reference](https://docs.expo.dev/versions/v58.0.0/sdk/reanimated/).
 - [Expo Gesture Handler reference](https://docs.expo.dev/versions/v58.0.0/sdk/gesture-handler/).
 - [RNGH 3 migration guide](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/upgrading-to-3/).
-- [Gesture Handler 3.2.1 metadata and source tarball](https://registry.npmjs.org/react-native-gesture-handler/3.2.1): `src/index.ts`, `src/v3/types`, `src/v3/hooks/gestures/pan/usePanGesture.ts`.
-- [Reanimated 4.7.0 metadata](https://registry.npmjs.org/react-native-reanimated/4.7.0).
+- [Gesture Handler 3.3.0 metadata and source tarball](https://registry.npmjs.org/react-native-gesture-handler/3.3.0): `src/index.ts`, `src/v3/types`, `src/v3/hooks/gestures/pan/usePanGesture.ts`.
+- [Reanimated 4.7.1 metadata](https://registry.npmjs.org/react-native-reanimated/4.7.1).
 - [Worklets 0.13.0 metadata](https://registry.npmjs.org/react-native-worklets/0.13.0).

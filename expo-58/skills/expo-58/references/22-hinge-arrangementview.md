@@ -1,16 +1,16 @@
 # Hinge input and adaptive arrangements
 
-Verified **2026-10-13** against SDK 58 documentation, `expo-hinge@58.0.1`, and `@expo/ui@58.0.16` published source/types. `ArrangementView` and `onHingeChange` first appear in UI `58.0.13`; a generic SDK 58 version number is insufficient.
+Verified **2026-10-16** against stable SDK 58 documentation, `expo-hinge@58.0.1`, and `@expo/ui@58.0.19` published source/types. `ArrangementView` and `onHingeChange` first appear in UI `58.0.13`; use `58.0.19` or later for the iOS source-build fix described below.
 
 ## Install and establish capabilities
 
-The published Expo 58.0.8 manifest includes these audited ranges. On an established SDK 58 project, install them explicitly when an older installation lacks the new APIs:
+The published Expo 58.0.12 manifest includes these audited ranges. On an established SDK 58 project, install them explicitly when an older installation lacks the new APIs:
 
 ```sh
-npx expo install @expo/ui@~58.0.16 expo-hinge@~58.0.1
+npx expo install @expo/ui@~58.0.19 expo-hinge@~58.0.1
 ```
 
-Rebuild the development client after changing native dependencies. Verify the installed lockfile and the native build's actual SDK. The package release line is currently beta; see [sdk-versions.json](sdk-versions.json).
+Rebuild the development client after changing native dependencies. Verify the installed lockfile and the native build's actual SDK. SDK 58 is stable as of October 15; the feature still has build and OS requirements. See [sdk-versions.json](sdk-versions.json).
 
 | Capability | Requirements and fallback |
 | --- | --- |
@@ -19,6 +19,8 @@ Rebuild the development client after changing native dependencies. Verify the in
 | `expo-hinge` on web | `isAvailable()` false, no hinge reading |
 | SwiftUI `onHingeChange` | iOS 27.1+ and supported SDK linkage; no-op otherwise |
 | SwiftUI `ArrangementView` | iOS 27.1+ plus compiled SDK support; older builds/systems render children without an arrangement container |
+
+**UI `58.0.19` stops shipping a precompiled iOS framework**, so a build with Xcode 27.1+ includes the Duo implementations without a `buildFromSource` override. Versions `58.0.13`–`58.0.18` expose the JavaScript APIs but their precompiled iOS artifacts may omit the implementations. Upgrade the package and rebuild; updating JavaScript alone cannot repair that binary. Source: [UI 58.0.19 package changelog](https://www.npmjs.com/package/@expo/ui/v/58.0.19).
 
 The `@expo/ui` native implementation checks `canImport(SwiftUICore, _version: 8.0.85)` as well as runtime availability. Its source explains that compiler version alone is insufficient because SDKs shipped in the same Xcode can differ. Do not infer support from a version comparison in JavaScript alone. Sources: [Hinge](https://docs.expo.dev/versions/v58.0.0/sdk/hinge/), [ArrangementView](https://docs.expo.dev/versions/v58.0.0/sdk/ui/swift-ui/arrangementview/), published UI `ios/ArrangementViewView.swift`.
 

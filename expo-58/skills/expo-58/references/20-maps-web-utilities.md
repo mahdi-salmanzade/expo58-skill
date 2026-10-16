@@ -1,6 +1,6 @@
 # Maps, browser surfaces, and sharing — SDK 58
 
-Verified 2026-10-13. Package versions are centralized in [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Package versions are centralized in [sdk-versions.json](sdk-versions.json).
 
 ## Maps are platform-specific
 
@@ -49,6 +49,9 @@ Use `WebView` from `react-native-webview` when the product requires embedded con
 Do not build an OAuth flow by collecting credentials in an arbitrary WebView.
 Treat `onMessage` data and incoming deep-link parameters as untrusted input.
 Validate message shape/origin and allowlisted navigation targets before invoking privileged app actions.
+SDK 58 reserves `__expo_*` query parameters for development launch control on any hostname and strips them before forwarding links to the app.
+`expo-linking` ignores those reserved fields; use `unwrapDevLaunchURL` when explicitly decoding a development wrapper.
+`Linking.parse` no longer double-decodes query values. Test literal `%`, `+`, and `@` in existing auth/content links instead of adding another blanket decode.
 Avoid mixing file access, injected scripts, and unrestricted remote navigation without an explicit need.
 For web support, choose a browser-native implementation or fallback; the native WebView package is not a universal iframe.
 
@@ -77,6 +80,7 @@ Exercise no-location, unsupported platform, external-app cancellation, and untru
 - [Maps](https://docs.expo.dev/versions/v58.0.0/sdk/maps/)
 - [React Native Maps alternative](https://docs.expo.dev/versions/v58.0.0/sdk/map-view/)
 - [WebBrowser](https://docs.expo.dev/versions/v58.0.0/sdk/webbrowser/)
+- [Linking](https://docs.expo.dev/versions/v58.0.0/sdk/linking/)
 - [WebView](https://docs.expo.dev/versions/v58.0.0/sdk/webview/)
 - [Sharing](https://docs.expo.dev/versions/v58.0.0/sdk/sharing/)
 - [MailComposer](https://docs.expo.dev/versions/v58.0.0/sdk/mail-composer/)

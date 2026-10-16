@@ -1,9 +1,9 @@
 # Upgrade to SDK 58: execution and behavior changes
 
-Audited **2026-10-13**. Target: `expo@58.0.8`, RN `0.88.0-rc.4`, React `19.3.0`.
-SDK 58 remains **beta** according to the official release post and npm dist-tags.
-Proceed with a user's requested 58 upgrade; make this status explicit and preserve
-the scope. Exact package ranges are in [sdk-versions.json](sdk-versions.json).
+Audited **2026-10-16**. Stable target: `expo@58.0.12`, RN `0.88.0`, React `19.3.0`.
+SDK 58 was released October 15. Exact package ranges and integrity-verified
+provenance are in [sdk-versions.json](sdk-versions.json). Individual experimental
+features retain their own maturity level; upgrading does not require adopting them.
 
 ## 1. Establish a recoverable baseline
 
@@ -20,16 +20,19 @@ New Architecture cannot be disabled on 55+.
 ## 2. For SDK 56, make a working SDK 57 checkpoint first
 
 ```sh
-npx expo install expo@^57.0.28 --fix
+npx expo install expo@^57.0.30 --fix
 npx expo-doctor@latest
 npx expo install --check
 ```
 
 This hop changes RN 0.85 → 0.86 and raises Expo's supported Node floor to 22.13.x.
 Use current SDK 57 patches: the early-57 Hermes V1 memory regression is fixed only
-in `expo` >= 57.0.9. A development-startup regression
-([expo/expo#48298](https://github.com/expo/expo/issues/48298)) had no released fix
-at the last check; confirm its status rather than assuming a patch resolved it. The audited 57 map aligns
+in `expo` >= 57.0.9. The separate development-startup regression
+([expo/expo#48298](https://github.com/expo/expo/issues/48298)) was fixed in
+Expo 57.0.17 / RN 0.86.3 / Hermes 250829098.0.17, according to the
+[maintainer's release confirmation](https://github.com/expo/expo/issues/48298#issuecomment-5437781055).
+Do not generalize that fix to every later startup issue: record the exact binary
+and investigate a reproducible failure. The audited 57 map aligns
 Reanimated 4.5.1, Worklets 0.10.1, and Gesture Handler ~2.32.0. Keeping SDK 56's
 Reanimated dependency with RN 0.86 is not a valid shortcut.
 
@@ -46,24 +49,30 @@ app usage; do not run an unrelated source rewrite on the 57 → 58 step.
 ## 3. Align SDK 58 dependencies and native projects
 
 ```sh
-npx expo install expo@^58.0.8 --fix
+npx expo install expo@^58.0.0 --fix
 npx expo-doctor@latest
 npx expo install --check
 ```
 
 Preserve the package manager and inspect the lockfile diff. Confirm React 19.3.0,
-RN 0.88.0-rc.4, Reanimated 4.7.0, Worklets 0.13.0, and Gesture Handler ~3.2.1.
-Do not use `expo@latest` here: it resolves SDK 57 at this audit. `expo@next` currently
-works but can move to a future SDK. Do not force stable RN 0.88.0 into this snapshot.
+RN 0.88.0, Reanimated 4.7.1, Worklets 0.13.0, and Gesture Handler ~3.3.0.
+`expo@latest` now resolves to 58, but the major-constrained command preserves the
+upgrade target when tags move. `next` currently points to an older patch; it is
+not the stable upgrade recipe. Earlier SDK 58 beta apps also need dependency
+realignment and a new native binary to replace their RN release candidate.
 
 For CNG, run prebuild after preserving changes and rebuild the client. CLI58's
 default remains destructive; `--no-clean` requests additive behavior. Maintained
 native projects need the upgrade helper plus Pod/Gradle updates and lifecycle
 changes below. Generating a disposable comparison project can make the diff clear.
 
-`jest-expo@58.0.9` peers Jest `^30.0.0` and
-`@react-native/jest-preset@^0.88.0-rc.4`. Upgrade existing test tooling as a coherent
+`jest-expo@58.0.11` peers Jest `^29.0.0 || ^30.0.0` and
+`@react-native/jest-preset@^0.88.0`. Upgrade existing test tooling as a coherent
 set instead of keeping a 57 native Jest preset or suppressing peer conflicts.
+
+The stable release precedes SDK 58's store Expo Go rollout. Use a development
+build or confirm a matching Expo Go installer; a successful package upgrade does
+not update the app already installed on a device.
 
 ## 4. Migrate React Native's strict TypeScript API
 
@@ -85,13 +94,16 @@ Use the [RN strict API migration](https://reactnative.dev/docs/strict-typescript
 for codegen exports and other type changes. Check dependency updates before adding
 type casts. A temporary deferral is `customConditions: ["react-native",
 "react-native-legacy-deep-imports"]` while retaining `extends: "expo/tsconfig.base"`.
-Treat this as temporary; it does not restore removed runtime APIs.
+The legacy opt-out is scheduled for removal after RN 0.88; it does not restore
+removed runtime APIs.
 
 Search for `InteractionManager`, the root `Touchable` export, `NativeMethods`,
 `Modal`'s `animated` prop, and obsolete `StatusBar` props. Replace deferred
 InteractionManager work with appropriate idle scheduling and cleanup, `animated`
 with supported Modal animation configuration, and status bar color layouts with
-the intended edge-to-edge UI. The [RN 0.88 RC notes](https://github.com/react/react-native/releases/tag/v0.88.0-rc.0)
+the intended edge-to-edge UI. `ImageBackground` is deprecated, not removed;
+plan a `View` with a positioned `Image` when touching that code.
+The [RN 0.88 release](https://github.com/react/react-native/releases/tag/v0.88.0)
 and [RN 0.87 release](https://reactnative.dev/blog/2026/08/11/react-native-0.87)
 give the removal context; inspect actual installed exports if docs change.
 
@@ -129,7 +141,7 @@ not a requirement to rewrite untouched modules.
 | Expo UI spacing | Omitted HStack/VStack/GlassEffectContainer spacing uses SwiftUI defaults; set `spacing={0}` only where zero spacing was intended. |
 | Android RNHostView | Replace removed `style` usage with supported modifiers. |
 | iOS RTL | Direction follows `I18nManager`; do not assume `supportsRTL` alone forces locale-derived layout. |
-| Photos video URI | Default URI now refers to the current edited asset; pass `version: AssetUriVersion.ORIGINAL` (exported from `expo-media-library/next`, not the root entry) when original bytes are required. |
+| Photos video URI | Default URI now refers to the current edited asset; pass `version: AssetUriVersion.ORIGINAL` when original bytes are required. Current `expo-media-library@58.0.9` exports this enum from both the root and `/next` entry points. |
 
 Inspect the versioned references for [FileSystem](https://docs.expo.dev/versions/v58.0.0/sdk/filesystem/),
 [SQLite](https://docs.expo.dev/versions/v58.0.0/sdk/sqlite/),
@@ -145,7 +157,7 @@ the task. Do not invent a migration urgency beyond the app's actual usage.
 
 ## 7. Test Android release optimization
 
-The published 58.0.17 bare template sets
+The published 58.0.21 bare template sets
 `android.enableMinifyInReleaseBuilds=true` and uses
 `proguard-android-optimize.txt`. This is a new default, not a 57 behavior.
 Reflection-heavy libraries can fail only in release builds; add the required keep
@@ -163,7 +175,17 @@ Check deep links, restored state, back gestures, tabs, drawer, and stack transit
 `freezeOnBlur` has no effect in SDK 58; remove it and use `activityEnabled` on the
 navigator or screen when inactive screens should keep state while pausing effects.
 
-Web async routes default to enabled; verify host routing and lazy chunks.
+Unspecified `web.output` now means `"server"`, with HTML rendered per request.
+To keep prerendered HTML plus API routes, use `web.output: "static"` with the
+`expo-router` plugin's `apiRoutes: true`; the APIs still need a server deployment.
+Web async routes also default to enabled; verify host routing and lazy chunks.
+Update custom `+html.tsx` to include `useServerDocumentContext()` attributes,
+`headNodes`, and `bodyNodes` (required for hydration), and move initial static
+metadata to `generateMetadata()`. Web safe-area spacing now uses CSS
+`env(safe-area-inset-*)`, not Router-provided Safe Area Context values.
+See [02-expo-router.md](02-expo-router.md) for the complete web migration and
+asynchronous Router testing changes. Use a production web export for `expo serve`;
+it rejects development exports containing server code.
 Some Router features need optional `@expo/ui` / `expo-symbols` peers. Install them
 only if the app uses those features, through `npx expo install`.
 Gesture Handler 3 introduces hooks but retains legacy builders; migrate interacting
@@ -203,8 +225,8 @@ data changes or a distributed native binary.
 
 ## Evidence
 
-- [Official SDK 58 beta notes](https://expo.dev/changelog/sdk-58-beta).
-- [Expo 58.0.8 manifest](https://registry.npmjs.org/expo/58.0.8) and [SDK 57.0.28 manifest](https://registry.npmjs.org/expo/57.0.28).
-- [Bare template 58.0.17](https://registry.npmjs.org/expo-template-bare-minimum/58.0.17), `android/gradle.properties` and `android/app/build.gradle`.
-- [Jest Expo 58.0.9 peers](https://registry.npmjs.org/jest-expo/58.0.9).
+- [Official SDK 58 stable notes](https://expo.dev/changelog/sdk-58).
+- [Expo 58.0.12 manifest](https://registry.npmjs.org/expo/58.0.12) and [SDK 57.0.30 manifest](https://registry.npmjs.org/expo/57.0.30).
+- [Bare template 58.0.21](https://registry.npmjs.org/expo-template-bare-minimum/58.0.21), `android/gradle.properties` and `android/app/build.gradle`.
+- [Jest Expo 58.0.11 peers](https://registry.npmjs.org/jest-expo/58.0.11).
 - [Incremental upgrade guidance](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/).

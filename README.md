@@ -5,17 +5,16 @@ support. Built from the Expo 56/57 skills, refreshed against SDK 58 documentatio
 and published packages, and integrated with the iPhone Duo skill's adaptation
 workflow.
 
-**Snapshot: October 13, 2026.** Expo's announcement currently labels SDK 58 **beta**.
-Packages published as `58.0.x` are not evidence of stable release status. This
-skill targets SDK 58 deliberately and checks the project's actual SDK before
-using version-specific guidance. See [Expo's release announcement](https://expo.dev/changelog/sdk-58-beta)
+**Version 1.1.0 · Snapshot: October 16, 2026.** Expo SDK 58 is **stable**, released
+October 15. The skill checks the project's actual SDK before applying its guidance.
+See [Expo's release announcement](https://expo.dev/changelog/sdk-58)
 and the [recorded package snapshot](expo-58/skills/expo-58/references/sdk-versions.json).
 
 | Snapshot item | Version |
 |---|---|
-| Expo | 58.0.8 (SDK 58 beta) |
-| React Native / React | 0.88.0-rc.4 / 19.3.0 |
-| Expo Router / Expo UI | 58.0.18 / 58.0.16 |
+| Expo | 58.0.12 (SDK 58 stable) |
+| React Native / React | 0.88.0 / 19.3.0 |
+| Expo Router / Expo UI | 58.0.21 / 58.0.19 |
 | Expo Hinge | 58.0.1 |
 | Documented Node / iOS / Xcode minimum | 22.13.x / 16.4 / 26.4 |
 | iPhone Duo hinge feature minimum | iOS 27.1 + Xcode 27.1 build |
@@ -24,6 +23,18 @@ The full manifest includes dependency ranges; use `npx expo install` to resolve
 compatible packages. These figures describe the audit, not a forced downgrade
 from newer compatible patches. Tooling requirements come from the
 [SDK 58 compatibility table](https://docs.expo.dev/versions/v58.0.0/).
+
+This update covers the stable release's App Intents capabilities and limits,
+precompiled Android modules, agent CLI, Router server-output migration, recycling
+lists, and the current Duo build path. Expo Modules 2.0 remains beta, App Intents
+remains alpha, and the agent CLI remains experimental.
+
+Expo Go's store release follows separately. For a new SDK 58 app, use
+`npx create-expo-app@latest my-app --template default@sdk-58` and a development
+build during that transition. To upgrade an existing SDK 57 app, Expo's command is
+`npx expo install expo@^58.0.0 --fix`; follow the
+[migration reference](expo-58/skills/expo-58/references/21-sdk-58-migration.md)
+for application and native changes.
 
 ## Install
 
@@ -128,17 +139,19 @@ scenario has been executed. Typechecking or reviewing an example does not prove
 physical Duo behavior. The references distinguish source verification, native
 builds, simulator checks, and hardware checks.
 
-The [creation verification record](expo-58/skills/expo-58/evals/verification-2026-10-13.md)
-documents the passing source/packaging checks, TypeScript examples, and independent
-app-repair test, including the device checks that were not run.
+The [stable-release verification record](expo-58/skills/expo-58/evals/verification-2026-10-16.md)
+records this update's checks. The
+[original creation record](expo-58/skills/expo-58/evals/verification-2026-10-13.md)
+preserves the historical beta snapshot and independent app-repair test. Neither
+record claims physical Duo verification.
 
 To refresh the manifest after reviewing release status and selecting compatible
 Expo/template versions:
 
 ```sh
 python3 scripts/update-sdk-snapshot.py \
-  --expo-version 58.0.8 --comparison-version 57.0.28 \
-  --template-version 58.0.17 --audited-at 2026-10-13 --release-status beta
+  --expo-version 58.0.12 --comparison-version 57.0.30 \
+  --template-version 58.0.21 --audited-at 2026-10-16 --release-status stable
 ```
 
 The helper verifies npm tarball integrity and reads manifests without installing

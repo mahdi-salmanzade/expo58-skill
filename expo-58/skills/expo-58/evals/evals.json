@@ -1,6 +1,6 @@
 {
   "skill_name": "expo-58",
-  "snapshot_date": "2026-10-13",
+  "snapshot_date": "2026-10-16",
   "methodology": {
     "purpose": "Forward-test version selection, migration decisions, and foldable behavior; no aggregate benchmark claim.",
     "execution": "Give an independent agent the skill and prompt plus the smallest necessary fixture. Record actual edits, checks, and missing capabilities. Evaluate assertions against observable output.",
@@ -10,7 +10,7 @@
   "evals": [
     {
       "id": "sdk-detection",
-      "prompt": "Use expo-58 to fix an image picker bug. package.json says expo ~57.0.21 and the lockfile resolves 57.0.28. Do not upgrade the app.",
+      "prompt": "Use expo-58 to fix an image picker bug. package.json says expo ~57.0.21 and the lockfile resolves 57.0.30. Do not upgrade the app.",
       "assertions": [
         "Identifies SDK57 and resolved patch rather than assuming58.",
         "Uses matching SDK57 APIs and does not alter Expo major.",
@@ -19,11 +19,12 @@
     },
     {
       "id": "release-status",
-      "prompt": "Create a new Expo58 app. I heard it is the latest stable release. Use the included October13,2026 snapshot without network access.",
+      "prompt": "Create a new Expo 58 app. Is it stable, and does that mean all included APIs and the store version of Expo Go are ready? Use only the included October 16, 2026 snapshot.",
       "assertions": [
-        "Clearly reports SDK58 beta status in the supplied snapshot.",
-        "Keeps requested SDK58 target and uses explicit SDK58 template.",
-        "Does not treat unsuffixed58.0.x as proof of stability or invent a stable release date."
+        "Identifies SDK 58 as stable, released October 15, 2026, with the audited Expo 58.0.12 and React Native 0.88.0 baseline.",
+        "Uses the explicit default@sdk-58 template; does not assume an unqualified create-expo-app targets SDK 58 during the Expo Go transition.",
+        "Keeps Expo Modules 2.0 beta, App Intents alpha, and agent CLI experimental status distinct from the SDK release status.",
+        "Distinguishes stable SDK packages from delayed App Store/Google Play Expo Go availability."
       ]
     },
     {
@@ -91,7 +92,8 @@
         "Checks linked build SDK/toolchain and actual hardware/window state.",
         "Explains deployment target alone cannot add APIs compiled out by an older Xcode SDK.",
         "Uses a verified Duo-capable build image and rebuilds when appropriate.",
-        "Does not promise changing one setting will guarantee non-null hardware data."
+        "Does not promise changing one setting will guarantee non-null hardware data.",
+        "Checks the installed Expo UI patch before applying an older buildFromSource workaround; current UI builds its iOS code from source."
       ]
     },
     {
@@ -121,6 +123,24 @@
         "Reports hardware/simulator checks as unrun, not passed.",
         "Provides concrete remaining state-continuity and hinge checks.",
         "Does not block source-level work solely because hardware is absent."
+      ]
+    },
+    {
+      "id": "stable-web-migration",
+      "prompt": "Upgrade our SDK 57 Router app to SDK 58. It exports static HTML to a CDN and has API routes on a server. We never set web.output. Preserve that behavior.",
+      "assertions": [
+        "Detects that SDK 58 defaults Router web.output to server and renders HTML per request.",
+        "Sets web.output to static and enables apiRoutes in the expo-router plugin to preserve static HTML plus API output.",
+        "Checks deployment of the server/API artifact separately from static assets and verifies deep links/lazy chunks."
+      ]
+    },
+    {
+      "id": "app-intents-limits",
+      "prompt": "Use Expo SDK 58 App Intents to complete a task from Siri while our app is not open. The announcement says Siri support shipped.",
+      "assertions": [
+        "Separates the shipped alpha App Intents surface from forthcoming task-manager/headless execution.",
+        "Does not invent shipped background JS execution or promise that indexing entities enables that flow.",
+        "Checks current package support and identifies the missing capability before proposing native or foreground alternatives."
       ]
     }
   ]

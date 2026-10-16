@@ -1,6 +1,6 @@
 # Notifications and background tasks — SDK 58
 
-Verified 2026-10-13 against docs and the published notification declarations. Pins: [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16 against docs and the published notification declarations. Pins: [sdk-versions.json](sdk-versions.json).
 
 ```sh
 npx expo install expo-notifications expo-device expo-constants expo-task-manager expo-background-task
@@ -74,7 +74,7 @@ Test foreground, background, terminated launch, denied permission, duplicate res
 Verify the correct build/project/environment before debugging credentials.
 
 - [Notifications](https://docs.expo.dev/versions/v58.0.0/sdk/notifications/)
-- [Published notification-handler contract](https://unpkg.com/expo-notifications@58.1.3/build/NotificationsHandler.d.ts)
+- [Published notification-handler contract](https://unpkg.com/expo-notifications@58.1.4/build/NotificationsHandler.d.ts)
 - [Push setup](https://docs.expo.dev/push-notifications/push-notifications-setup/)
 - [Push receipts](https://docs.expo.dev/push-notifications/sending-notifications/)
 - [BackgroundTask](https://docs.expo.dev/versions/v58.0.0/sdk/background-task/)

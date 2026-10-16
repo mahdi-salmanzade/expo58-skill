@@ -1,6 +1,6 @@
 # Expo UI in SDK 58
 
-Verified **2026-10-13** against `@expo/ui@58.0.16` source and declarations. Use [sdk-versions.json](sdk-versions.json) for the current beta package snapshot. The fact a page has `/v58.0.0/` in its URL does not establish stable-release status or prove an API existed in `58.0.0`.
+Verified **2026-10-16** against `@expo/ui@58.0.19` source and declarations in the stable SDK 58 dependency set. Use [sdk-versions.json](sdk-versions.json) for exact package provenance. SDK release status does not remove an individual API's experimental status or prove that an API existed in the first `58.0.0` package.
 
 ## Choose the rendering surface
 
@@ -17,16 +17,73 @@ Verified **2026-10-13** against `@expo/ui@58.0.16` source and declarations. Use 
 
 ## Important changes since SDK 57
 
-The package's [published changelog](https://www.npmjs.com/package/@expo/ui/v/58.0.16) records these details:
+The package's [published changelog](https://www.npmjs.com/package/@expo/ui/v/58.0.19) records these details:
 
 - `Host` fills from the top rather than centering content. Unspecified `HStack`/`VStack` spacing now uses the system default; pass `spacing={0}` when zero is intentional.
 - Native SwiftUI `NavigationStack`, `NavigationLink`, `NavigationDestination`, `Toolbar`, and `NavigationSplitView` provide navigation within SwiftUI content. They do not migrate a Router app automatically.
 - From `58.0.6`, a single `frame()` accepts fixed `width`/`height` **or** flexible `min*`/`ideal*`/`max*` values. Separate modifiers if both behaviors are needed.
 - `RNHostView.matchContents` supports per-axis sizing from `58.0.10`. A content-sized height with parent-proposed width is useful in a sheet. Do not propagate window width into a smaller pane.
 - `ArrangementView`, arrangement modifiers, `onHingeChange`, and `useWorkletCallback` arrive in `58.0.13`. Earlier SDK 58 patches do not contain them.
-- `58.0.16` fixes hosted-view measurement and a Duo sheet-width clipping issue. It also rebuilds native artifacts after an Expo Modules JSI ABI change; keep the SDK dependency set coherent and rebuild the binary.
+- `58.0.16` fixes hosted-view measurement and a Duo sheet-width clipping issue. `58.0.18` corrects `Form`/`List` section insets beside the Duo rail.
+- **`58.0.19` removes the precompiled iOS UI framework.** With Xcode 27.1+, `ArrangementView` and `onHingeChange` compile against that SDK without a `buildFromSource` override. Earlier precompiled artifacts can lack these implementations even when the app itself links iOS 27.1. Upgrade and rebuild before relying on them.
+- Recycling data APIs cover SwiftUI `List`/lazy stacks and Compose lazy lists. Native navigation also includes two-/three-column `NavigationSplitView`, toolbar placement and visibility priority, and `navigationTitle`.
+- SwiftUI color modifiers accept `ShapeStyle` materials/gradients. Compose adds `Image`, date-range pickers, and `VerticalSlider`; `58.0.17` renames carousel sizing to `preferredItemWidth` and deprecates `maxItemWidth`. Keep platform-specific imports explicit.
 
-Use `npx expo install @expo/ui` ordinarily. For this snapshot's Duo examples, on an already established SDK 58 project, install `npx expo install @expo/ui@~58.0.16` and verify the lockfile. Do not install `@latest` blindly while the latest dist-tag points at SDK 57.
+Use `npx expo install @expo/ui` in an SDK 58 app; the audited `expo@58.0.12` manifest selects `~58.0.19`. Verify the lockfile and rebuild after native changes. Select packages through the project's SDK manifest instead of assuming a moving `latest` tag is compatible with every app.
+
+## Recycling large data sets
+
+| Native container | Data child |
+| --- | --- |
+| SwiftUI `List` | `List.ForEach` |
+| SwiftUI `LazyVStack` / `LazyHStack` | `LazyVStack.ForEach` / `LazyHStack.ForEach` |
+| Compose `LazyColumn` / `LazyRow` | `LazyColumn.Items` / `LazyRow.Items` |
+
+Supply `data`, stable string keys through `keyExtractor`, and a render function receiving `{ item, index }`. Do not build a large collection with `array.map()` and expect JavaScript row recycling. SwiftUI example for an Apple-specific file:
+
+```tsx
+import { Host, List, Text } from '@expo/ui/swift-ui';
+
+type Article = { id: string; title: string };
+const rowKey = (article: Article) => article.id;
+const renderArticle = ({ item }: { item: Article }) => <Text>{item.title}</Text>;
+
+export function ArticleList({ articles }: { articles: readonly Article[] }) {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <List.ForEach data={articles} keyExtractor={rowKey}>
+          {renderArticle}
+        </List.ForEach>
+      </List>
+    </Host>
+  );
+}
+```
+
+In an Android-specific file the same data pattern uses the Compose namespace:
+
+```tsx
+import { Host, LazyColumn, Text } from '@expo/ui/jetpack-compose';
+
+type Article = { id: string; title: string };
+const rowKey = (article: Article) => article.id;
+const renderArticle = ({ item }: { item: Article }) => <Text>{item.title}</Text>;
+
+export function ArticleList({ articles }: { articles: readonly Article[] }) {
+  return (
+    <Host style={{ flex: 1 }}>
+      <LazyColumn>
+        <LazyColumn.Items data={articles} keyExtractor={rowKey}>
+          {renderArticle}
+        </LazyColumn.Items>
+      </LazyColumn>
+    </Host>
+  );
+}
+```
+
+A recycled component can retain the previous item's local state. Store durable edits outside rows by item ID, or explicitly reset item-specific state when identity changes. Keep the render function stable and replace `data` rather than mutating it. Tune `estimatedItemSize` and `overscanCount` only after measuring placeholders and scroll behavior. SwiftUI `List` estimates exclude row insets and use points; Compose uses dp. Setting `recycling={false}` mounts all rows; switching it remounts them, so do not toggle it as the device folds. Supply a bounded host and test long lists with accessibility and resizing. Sources: [SwiftUI List](https://docs.expo.dev/versions/v58.0.0/sdk/ui/swift-ui/list/), [Compose LazyColumn](https://docs.expo.dev/versions/v58.0.0/sdk/ui/jetpack-compose/lazycolumn/).
 
 ## State and measurements
 

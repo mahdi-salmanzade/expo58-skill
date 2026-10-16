@@ -1,6 +1,6 @@
 # System bars, widgets, and native presentation — SDK 58
 
-Verified 2026-10-13. Resolve dependencies with Expo and consult [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Resolve dependencies with Expo and consult [sdk-versions.json](sdk-versions.json).
 
 ## System bars
 
@@ -60,6 +60,10 @@ Use `updateSnapshot` for current state and `updateTimeline` for scheduled entrie
 Images needed by an iOS widget must be accessible in its app group, not only the app sandbox.
 Live Activities use `createLiveActivity` and their dedicated regions. They are not entries in the home-screen `widgets[]` list.
 ActivityKit scheduling and update budgets remain system controlled.
+Pass an optional `Date` as `start(props, url, staleDate)` or `update(props, staleDate)` to mark aging Live Activity content.
+A stale date lets the system de-emphasize old content; it does not schedule an app refresh.
+SDK 58 preserves ActivityKit identifiers for reliable later updates.
+Current widget packages rebuild the iOS widget JS bundle on each Xcode build, so ordinary JS edits do not require a clean build.
 
 SDK 58 adds Android home-screen widgets, verified in the published package changelog; the versioned Widgets guide remains primarily iOS-oriented.
 Android widgets are opt-in: set the `expo-widgets` plugin option `enableAndroid: true`
@@ -82,6 +86,6 @@ Test widgets while the application process is absent and in tinted/large-text mo
 - [StatusBar](https://docs.expo.dev/versions/v58.0.0/sdk/status-bar/)
 - [NavigationBar](https://docs.expo.dev/versions/v58.0.0/sdk/navigation-bar/)
 - [Widgets](https://docs.expo.dev/versions/v58.0.0/sdk/widgets/)
-- [Published widget changelog](https://unpkg.com/expo-widgets@58.0.16/CHANGELOG.md)
+- [Published widget changelog](https://unpkg.com/expo-widgets@58.0.19/CHANGELOG.md)
 - [GlassEffect](https://docs.expo.dev/versions/v58.0.0/sdk/glass-effect/)
-- [SDK 58 beta](https://expo.dev/changelog/sdk-58-beta)
+- [SDK 58 release](https://expo.dev/changelog/sdk-58)

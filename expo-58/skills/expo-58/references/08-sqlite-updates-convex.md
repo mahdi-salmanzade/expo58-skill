@@ -1,6 +1,6 @@
 # Local data and compatible OTA updates — SDK 58
 
-Verified 2026-10-13. Package versions are centralized in [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Package versions are centralized in [sdk-versions.json](sdk-versions.json).
 
 ```sh
 npx expo install expo-sqlite expo-updates
@@ -38,10 +38,17 @@ Finalize prepared statements in `finally`, even when execution fails.
 When isolation matters on supported platforms, use `withExclusiveTransactionAsync` and its transaction object.
 Do not assume the exclusive API works on web; check platform support and serialize writes where necessary.
 Web SQLite needs its documented WASM/Metro and cross-origin isolation setup.
+The bundled web WASM omits FTS; the native `enableFTS` plugin setting does not enable it on web.
+For web FTS, build compatible WASM and call `SQLite.configureWeb({ wasmURL: require('./assets/wa-sqlite-fts.wasm') })` before opening any database.
+Configuration calls replace previous options; changing the WASM URL after a database opens throws.
 `expo-sqlite/kv-store` is useful for non-secret preferences; it is not SecureStore.
 
 SDK 58 removes libSQL support: `syncLibSQL()` and the `libSQLOptions` open option are gone.
 The deprecated `useLibSQL` plugin setting only warns and has no effect; remove it and choose a supported sync strategy before upgrading a libSQL-dependent app.
+`db.interruptSync()` cancels active async statements on the same native connection, including shared cached handles; it is unavailable on web.
+Wait for their promises to settle before closing/reusing the connection; an interrupted write rolls back its explicit transaction.
+Use the transaction object's connection when interrupting exclusive transaction work.
+Prepared-result cursors advance with `getFirstSync` and sync iteration; call `resetSync` before reading the same result again.
 The package also ships its own agent guidance. Consult installed guidance for advanced database work.
 
 ## OTA compatibility is a native contract
@@ -59,7 +66,7 @@ An update cannot add Hinge, a widget extension, or a camera entitlement to an ol
 ```
 
 Choose a runtime policy based on the app's release process; do not switch an existing app casually.
-SDK 58's fingerprint default uses the balanced preset. Native package files are not all hashed by content under that preset.
+SDK 58's default `balanced` fingerprint preset hashes native packages by name/version and ignores app-version-only changes; it does not hash every native package file.
 For native patches or custom build inputs, review fingerprint configuration so the runtime changes when the binary contract changes.
 Runtime version, channel, branch, platform, and update environment must all match the intended installation.
 See [18-eas-full-workflow.md](18-eas-full-workflow.md) for operational commands.
@@ -67,6 +74,8 @@ See [18-eas-full-workflow.md](18-eas-full-workflow.md) for operational commands.
 `checkForUpdateAsync`, `fetchUpdateAsync`, and `reloadAsync` come from `expo-updates`.
 Use an update-ready UI instead of unexpectedly interrupting an edit or checkout.
 OTA behavior should be tested in a suitable release/preview build; Expo Go is not a production-update test.
+`updates.maxUpdatesToKeep` defaults to 2, including the running update; 3 retains the running update plus up to two older ones.
+Retention favors matching manifest filters and recent commits. It is not a hard disk limit: other scopes and same/newer commits are outside that eviction count.
 
 ## Server data and Convex
 
@@ -82,8 +91,8 @@ Avoid duplicating optimistic updates across both layers without a reconciliation
 Exercise migration, rollback after a failing transaction, app restart, and update/binary mismatch.
 
 - [SQLite](https://docs.expo.dev/versions/v58.0.0/sdk/sqlite/)
-- [Published SQLite migration notes](https://unpkg.com/expo-sqlite@58.0.12/CHANGELOG.md)
+- [Published SQLite migration notes](https://unpkg.com/expo-sqlite@58.0.13/CHANGELOG.md)
 - [Updates and runtime policies](https://docs.expo.dev/versions/v58.0.0/sdk/updates/)
 - [Fingerprint](https://docs.expo.dev/versions/v58.0.0/sdk/fingerprint/)
-- [SDK 58 beta](https://expo.dev/changelog/sdk-58-beta)
+- [SDK 58 release](https://expo.dev/changelog/sdk-58)
 - [Convex React Native setup](https://docs.convex.dev/quickstart/react-native)

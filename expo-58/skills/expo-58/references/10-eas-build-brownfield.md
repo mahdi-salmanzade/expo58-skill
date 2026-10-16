@@ -1,6 +1,6 @@
 # Native builds and brownfield integration — SDK 58
 
-Verified 2026-10-13. Use [sdk-versions.json](sdk-versions.json) for the SDK/toolchain baseline.
+Verified 2026-10-16. Use [sdk-versions.json](sdk-versions.json) for the SDK/toolchain baseline.
 
 ## Choose a build path
 
@@ -23,14 +23,14 @@ For shared build/release configuration, continue to [18-eas-full-workflow.md](18
 
 ## SDK 58 build changes
 
-Android `expo-modules-core` includes precompiled native libraries.
-Preserve the normal prebuilt path unless native patches or a verified compiler incompatibility require source builds.
-A documented opt-out for one package is preferable to disabling precompilation for the whole app.
-Check both debug and release builds; minification and native initialization can expose different defects.
+Android `expo-modules-core` ships precompiled native libraries for all four ABIs in debug and release variants, reducing clean-build compilation work.
+Keep the prebuilt path unless native patches or compiler compatibility require source builds.
+For that case, set `android.buildExpoModulesCoreFromSource: true` in the `expo-build-properties` plugin configuration and rebuild.
+Android release builds now enable R8 by default. Check startup and reflection-dependent libraries in release, not only debug.
+Fix missing keep rules when possible; `android.enableMinifyInReleaseBuilds: false` is an explicit plugin opt-out when needed.
 
-CocoaPods remains the supported default iOS path. Swift Package Manager support is experimental groundwork, not a drop-in migration requirement.
-Pick an EAS image from the current image catalog when a specific Xcode SDK is needed.
-Do not convert the beta announcement's historical image availability into a fixed rule about today's builds.
+CocoaPods remains the supported default iOS path. Expo's autolinking integration with `npx react-native spm` is a preview, not a required migration.
+Pick an EAS image from the current image catalog when a specific Xcode SDK is needed; SDK release status alone does not identify an installed image.
 Features tied to iOS 27 or iPhone Duo need an appropriate build SDK and runtime, not merely an SDK 58 JS package.
 
 ## Continuous Native Generation versus owned native projects
@@ -76,6 +76,7 @@ A successful artifact build does not prove it loads in the intended host applica
 - [EAS Build](https://docs.expo.dev/build/introduction/)
 - [Build infrastructure](https://docs.expo.dev/build-reference/infrastructure/)
 - [Brownfield](https://docs.expo.dev/versions/v58.0.0/sdk/brownfield/)
+- [SDK 58 build changes](https://expo.dev/changelog/sdk-58)
 - [Build properties](https://docs.expo.dev/versions/v58.0.0/sdk/build-properties/)
 - [Prebuilt Expo modules](https://docs.expo.dev/guides/prebuilt-expo-modules/)
 - [Scene lifecycle migration](https://expo.fyi/ios-scene-lifecycle)

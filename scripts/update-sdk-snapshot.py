@@ -73,9 +73,9 @@ def sdk_snapshot(version):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--expo-version", default="58.0.8")
-    parser.add_argument("--comparison-version", default="57.0.28")
-    parser.add_argument("--template-version", default="58.0.17")
+    parser.add_argument("--expo-version", default="58.0.12")
+    parser.add_argument("--comparison-version", default="57.0.30")
+    parser.add_argument("--template-version", default="58.0.21")
     parser.add_argument("--audited-at", required=True, help="YYYY-MM-DD, after reviewing release status")
     parser.add_argument("--release-status", choices=["beta", "stable"], required=True,
                         help="Human-reviewed status; do not infer from numeric npm versions")

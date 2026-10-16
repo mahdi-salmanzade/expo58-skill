@@ -1,11 +1,10 @@
 # Expo SDK 58: platform, setup, and upgrade decisions
 
-Audited **2026-10-13**. SDK 58 is available as a **beta**, with published
-`expo@58.0.8` and React Native `0.88.0-rc.4`. Do not infer stability from the
-absence of `-beta` in Expo's package version. The official release post is still
-[SDK 58 beta](https://expo.dev/changelog/sdk-58-beta); npm's `latest` points to
-SDK 57 and `next` to SDK 58 at this audit. Honor a request to use 58 while stating
-this status; do not silently create a 57 app.
+Audited **2026-10-16**. Expo SDK 58 is **stable**, released October 15, with
+published `expo@58.0.12` and React Native `0.88.0`. The official
+[SDK 58 release](https://expo.dev/changelog/sdk-58) and npm's `latest` tag now
+identify SDK 58. `next` still points to the older 58.0.11 patch at this audit;
+release-channel tags are not ordered version comparisons.
 
 ## Exact published baseline
 
@@ -17,28 +16,29 @@ for what is actually installed.
 
 | Component | Audited SDK 58 value | SDK 57 comparison |
 |---|---|---|
-| `expo` | `58.0.8` | `57.0.28` |
-| React Native | `0.88.0-rc.4` | `0.86.3` |
+| `expo` | `58.0.12` | `57.0.30` |
+| React Native | `0.88.0` | `0.86.3` |
 | React / React DOM | `19.3.0` | `19.2.3` |
 | React Native Web | `~0.21.4` | `~0.21.0` |
-| Default template | `58.0.17` (`sdk-58` / `next`) | `57.0.30` (`sdk-57` / `latest`) |
+| Default template | `58.0.21` (`sdk-58` / `latest`) | `57.0.32` (`sdk-57`) |
 | TypeScript in template | `~6.0.3` | — |
-| `@expo/cli` range in Expo | `^58.1.7` | `^57.0.29` |
-| `babel-preset-expo` | `~58.0.13` | `~57.0.15` |
-| `@expo/ui` | `~58.0.16` | `~57.0.23` |
+| `@expo/cli` range in Expo | `^58.1.10` | `^57.0.31` |
+| `babel-preset-expo` | `~58.0.16` | `~57.0.16` |
+| `@expo/ui` | `~58.0.19` | `~57.0.25` |
 | `expo-hinge` | `~58.0.1` | absent |
-| `expo-router` | `~58.0.18` | `~57.0.26` |
+| `expo-router` | `~58.0.21` | `~57.0.28` |
 
 The [versioned compatibility table](https://docs.expo.dev/versions/v58.0.0/)
 lists RN 0.88 and RN Web 0.21.0 at the family level. The published template and
-bundled manifest above provide the exact patch or RC. Do not replace the RC with
-an assumed stable `0.88.0`, or mechanically give every Expo package `~58.0.0`.
+bundled manifest above provide the exact patch. The stable release post retains
+some RC-era links; the published manifest now pins stable RN 0.88.0. Do not keep
+the beta RC or mechanically give every Expo package `~58.0.0`.
 
 ## Environment gates
 
 | Requirement | SDK 58 baseline |
 |---|---|
-| Node | `^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0` in `expo@58.0.8` engines |
+| Node | `^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0` in `expo@58.0.12` engines |
 | iOS | 16.4+ |
 | Xcode | 26.4+ for the general SDK baseline |
 | Android runtime | Android 7+ / API 24+ |
@@ -57,6 +57,9 @@ SDK 55+ cannot disable it. Removing a stale `newArchEnabled: false` is appropria
 promising it will restore the bridge is not. Keep Hermes and Expo's matched native
 packages unless the task specifically requires an engine experiment.
 
+SDK 58 does not currently support macOS; track the required React Native macOS
+update before treating an iOS build as evidence of macOS support.
+
 ## Create a 58 project intentionally
 
 ```sh
@@ -66,10 +69,11 @@ npx expo install --check
 npx expo-doctor@latest
 ```
 
-`default@sdk-58` currently resolves to template 58.0.17. Use
-`default@58.0.17` when reproducing this audit exactly. `default@next` is the
-official beta command, but the tag can advance to a different SDK later.
-An unqualified `create-expo-app@latest` is not a reliable way to request SDK 58.
+`default@sdk-58` resolves to template 58.0.21 at this audit; use
+`default@58.0.21` for exact reproduction. During the Expo Go store transition,
+the release instructions say unqualified `create-expo-app` still creates SDK 57
+projects, even though the template's `latest` tag points to 58. Use the explicit
+SDK tag and a development build. Do not use `default@next` for the stable target.
 After creation, inspect `package.json` and the resolved `expo` version.
 
 Use the existing package manager in a repository. Preserve its lockfile and
@@ -87,7 +91,7 @@ Git status. Classify the native directories by ownership, not existence alone:
   Apply the native upgrade diff and preserve custom native code.
 - **Uncertain:** inspect history and config plugins before running prebuild.
 
-In published CLI 58.1.7, `expo prebuild` uses `clean: !args['--no-clean']`.
+In published CLI 58.1.10, `expo prebuild` uses `clean: !args['--no-clean']`.
 **It deletes and recreates native folders by default**, as on SDK 57.
 `--no-clean` requests additive behavior but does not make plugin edits harmless or
 perform the entire manual native migration. Generate a scratch native project for
@@ -96,7 +100,7 @@ comparison if deleting the current folders would lose application source.
 ## Upgrade an existing SDK 57 app
 
 ```sh
-npx expo install expo@^58.0.8 --fix
+npx expo install expo@^58.0.0 --fix
 npx expo-doctor@latest
 npx expo install --check
 ```
@@ -119,10 +123,12 @@ A 57 native binary cannot become a 58 native binary through EAS Update. Build ne
 iOS and Android clients and verify the new runtime/channel before publishing JS
 updates. Clear Metro caches only after fixing incompatible dependencies.
 
-An installed store Expo Go build may still target SDK 57 during this beta. Use a
-matching available Expo Go build where supported, or a development build. Native
-module availability and device hardware are separate: a successful bundle does
-not prove Hinge events work on an ordinary simulator.
+Expo Go for SDK 58 is scheduled to reach the App Store and Google Play within a
+few weeks of the stable release. Until the matching binary is available, use a
+development build or a verified compatible Expo Go install. Check
+[expo.dev/go](https://expo.dev/go) for the actual installer. A stable SDK release
+does not upgrade an installed native client. Hardware capability is a separate
+check: a successful bundle does not prove Hinge events work on a simulator.
 
 For iPhone Duo work, preserve current-window resizing, safe areas, route state, and
 the non-foldable fallback. Use `expo-hinge` for posture input and native
@@ -131,7 +137,7 @@ for responsive layouts or a reason to change every screen.
 
 ## Sources
 
-- [Expo 58.0.8 metadata](https://registry.npmjs.org/expo/58.0.8), including tarball provenance.
-- [Default template 58.0.17](https://registry.npmjs.org/expo-template-default/58.0.17).
+- [Expo 58.0.12 metadata](https://registry.npmjs.org/expo/58.0.12), including tarball provenance.
+- [Default template 58.0.21](https://registry.npmjs.org/expo-template-default/58.0.21).
 - [Upgrade walkthrough](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/) for incremental upgrade and native ownership decisions.
-- [CLI 58.1.7](https://registry.npmjs.org/@expo/cli/58.1.7), `build/src/prebuild/index.js` for clean-by-default behavior.
+- [CLI 58.1.10](https://registry.npmjs.org/@expo/cli/58.1.10), `build/src/prebuild/index.js` for clean-by-default behavior.

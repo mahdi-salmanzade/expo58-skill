@@ -1,6 +1,6 @@
 # App config, fonts, splash, and foundational packages — SDK 58
 
-Verified 2026-10-13. Toolchain and package snapshot: [sdk-versions.json](sdk-versions.json).
+Verified 2026-10-16. Toolchain and package snapshot: [sdk-versions.json](sdk-versions.json).
 
 ## App configuration
 
@@ -30,6 +30,8 @@ npx expo config --type introspect
 
 Do not log secrets while inspecting config. Values in public config and the client bundle are readable by users.
 Use a separate variable such as `APP_VARIANT` for app variants; SDK 58 CLI controls `NODE_ENV` itself.
+For `expo run:*`, the CLI derives `NODE_ENV` from the build configuration; non-Debug configurations use production.
+EAS config evaluation, prebuild, and doctor run in production mode. Do not use `NODE_ENV` as a staging selector.
 Keep EAS environment selection aligned across builds and updates.
 See [18-eas-full-workflow.md](18-eas-full-workflow.md).
 
@@ -67,6 +69,13 @@ Use `expo-application` for native application/version facts and `expo-device` fo
 A development server's config version may differ from the installed native binary version.
 Do not select a Duo layout by matching a device marketing name; use measured space and capabilities.
 
+## Localization and RTL
+
+Use `expo-localization` for locale facts and keep locale-aware formatting separate from navigation/layout state.
+On iOS, SDK 58 no longer makes `supportsRTL` force RTL automatically from the device locale.
+React Native's `I18nManager` controls direction; check existing `allowRTL`/`forceRTL` choices and test an actual relaunch.
+Do not use a locale string as a substitute for verifying rendered writing direction.
+
 ## Validation
 
 Check app identity, icon/splash, permission prompts, fonts, and environment-dependent endpoints in the actual binary.
@@ -81,4 +90,6 @@ Verify source-controlled config reproduces the expected native output without un
 - [SplashScreen](https://docs.expo.dev/versions/v58.0.0/sdk/splash-screen/)
 - [Constants](https://docs.expo.dev/versions/v58.0.0/sdk/constants/)
 - [Application](https://docs.expo.dev/versions/v58.0.0/sdk/application/)
+- [Localization](https://docs.expo.dev/versions/v58.0.0/sdk/localization/)
+- [SDK 58 migration details](https://expo.dev/changelog/sdk-58)
 - [Environment variables](https://docs.expo.dev/guides/environment-variables/)
